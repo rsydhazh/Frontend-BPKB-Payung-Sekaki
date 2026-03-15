@@ -11,3 +11,10 @@ export async function createNews(data: NewsPayload) {
     body: JSON.stringify(data),
   });
 }
+
+// --- JALUR BARU UNTUK MENGHAPUS BERITA ---
+export async function deleteNews(id: number | string) {
+  return apiFetch(`/news/${id}`, {
+    method: "DELETE",
+  });
+}

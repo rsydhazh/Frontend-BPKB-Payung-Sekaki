@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FiEye, FiEyeOff, FiArrowLeft } from "react-icons/fi";
@@ -13,14 +13,16 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   
   const router = useRouter();
+  
+  // 1. Membuat referensi (ref) untuk elemen input password
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Validasi Field Kosong (Mencegah input kosong)
     if (!email || !password) {
-      setError("Email dan Password Harus Hiisi");
-      return; // Hentikan proses eksekusi di sini
+      setError("Email dan Password Harus Diisi");
+      return; 
     }
 
     setIsLoading(true);
@@ -39,7 +41,6 @@ export default function AdminLoginPage() {
         localStorage.setItem("token", data.token);
         router.push("/admin");
       } else {
-        // 2. Validasi Salah Email/Password
         setError("Login gagal! Periksa kembali email dan password");
       }
     } catch (err) {
@@ -49,12 +50,18 @@ export default function AdminLoginPage() {
     }
   };
 
+  // 2. Fungsi untuk menangkap tombol Enter di kolom Email
+  const handleEmailKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Mencegah form langsung tersubmit
+      passwordInputRef.current?.focus(); // Memindahkan kursor ke kolom password
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fcfdff] px-4">
-      {/* Card Container dengan Soft Shadow agar terlihat "Mahal" */}
       <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md border border-gray-100">
         
-        {/* Tombol Kembali dengan warna Primary */}
         <Link
           href="/"
           className="flex items-center gap-2 text-sm text-[#0a1680] mb-8 hover:text-[#f1b94c] transition-colors font-medium"
@@ -63,7 +70,6 @@ export default function AdminLoginPage() {
           Kembali ke Portal Publik
         </Link>
 
-        {/* Header Section */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-[#1a1a1a] mb-2">
             Login Admin
@@ -73,7 +79,6 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
-        {/* Alert Error */}
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 text-center border border-red-100">
             {error}
@@ -90,9 +95,9 @@ export default function AdminLoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleEmailKeyDown} // <-- 3. Memasang deteksi tombol Enter
               placeholder="admin@payungsekaki.com"
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#93b2f8] transition-all"
-
             />
           </div>
 
@@ -103,6 +108,7 @@ export default function AdminLoginPage() {
             </label>
             <div className="relative">
               <input
+                ref={passwordInputRef} // <-- 4. Menempelkan referensi ke input ini
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -114,12 +120,11 @@ export default function AdminLoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#0a1680]"
               >
-                {showPassword ? < FiEye size={20} /> : < FiEyeOff size={20} />}
+                {showPassword ? <FiEye size={20} /> : <FiEyeOff size={20} />}
               </button>
             </div>
           </div>
 
-          {/* Submit Button dengan warna Primary & Hover Action */}
           <button
             type="submit"
             disabled={isLoading}

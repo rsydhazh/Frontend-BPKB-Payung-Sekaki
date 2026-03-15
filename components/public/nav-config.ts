@@ -1,29 +1,28 @@
-// components/public/nav-config.ts
-
 export type NavItem = {
   label: string;
   href: string;
 };
 
 // Mengelompokkan menu berdasarkan modul
-export const navMenus: Record<"umum" | "bina-generasi" | "keluarga", NavItem[]> = {
+export const navMenus: Record<"umum" | "kependudukan" | "keluarga", NavItem[]> = {
   umum: [
     { label: "Beranda", href: "/umum" },
     { label: "Tentang", href: "/umum/tentang" },
-    { label: "Program", href: "/umum/program" },
     { label: "Galeri", href: "/umum/galeri" },
     { label: "Berita", href: "/umum/berita" },
   ],
-  "bina-generasi": [
-    { label: "Beranda", href: "/bina-generasi" },
-    { label: "Tentang", href: "/bina-generasi/tentang" },
-    { label: "Galeri", href: "/bina-generasi/galeri" },
-    { label: "Berita", href: "/bina-generasi/berita" },
+  "kependudukan": [
+    { label: "Beranda", href: "/kependudukan" },
+    { label: "Tentang", href: "/kependudukan/tentang" },
+    { label: "Galeri", href: "/kependudukan/galeri" },
+    { label: "Berita", href: "/kependudukan/berita" },
+    { label: "Pendaftaran", href: "/kependudukan/pendaftaran" }
   ],
   keluarga: [
     { label: "Beranda", href: "/keluarga" },
     { label: "Tentang", href: "/keluarga/tentang" },
     { label: "Galeri", href: "/keluarga/galeri" },
     { label: "Berita", href: "/keluarga/berita" },
+    { label: "Pendaftaran Yan KB", href: "/keluarga/pendaftaran" }
   ],
 };

@@ -7,7 +7,7 @@ import { navMenus } from "./nav-config";
 import { FiLogOut, FiMenu, FiX } from "react-icons/fi";
 
 interface NavbarProps {
-  type: "umum" | "bina-generasi" | "keluarga";
+  type: "umum" | "kependudukan" | "keluarga";
 }
 
 export default function Navbar({ type }: NavbarProps) {

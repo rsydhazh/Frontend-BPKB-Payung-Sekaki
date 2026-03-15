@@ -9,19 +9,17 @@ export default function UmumBeritaPage() {
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
       {/* 1. HEADER */}
-      <section className="bg-[#0a1680] pt-16 pb-24 text-center px-8 rounded-b-[4rem] relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.8)_0%,transparent_70%)]"></div>
-        
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <FiFileText className="mx-auto text-[#f1b94c] mb-6" size={40} />
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-6 tracking-tight">
-            Berita & <span className="text-[#f1b94c]">Informasi</span>
-          </h1>
-          <p className="text-[#93b2f8] text-lg font-medium leading-relaxed">
-            Kumpulan artikel, pengumuman, dan berita terbaru seputar kegiatan Balai KB Payung Sekaki.
-          </p>
+      <div className="max-w-7xl mx-auto px-8 lg:px-16 text-center mb-16">
+        <div className="w-16 h-16 bg-[#0a1680]/5 text-[#0a1680] rounded-2xl flex items-center justify-center mx-auto mb-6">
+          <FiFileText size={32} />
         </div>
-      </section>
+        <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1a] mb-6 tracking-tight">
+          Berita <span className="text-[#0a1680]">& Informasi</span>
+        </h1>
+        <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+          Kumpulan artikel, pengumuman, dan berita terbaru seputar kegiatan Balai KB Payung Sekaki.
+        </p>
+      </div>
 
       {/* 2. AREA KONTEN */}
       <div className="max-w-7xl mx-auto px-8 lg:px-16 -mt-10 relative z-20">

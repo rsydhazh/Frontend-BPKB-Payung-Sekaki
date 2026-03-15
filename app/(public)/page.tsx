@@ -12,11 +12,11 @@ const portalModules = [
     href: "/umum",
   },
   {
-    id: "bina-generasi",
-    title: "Modul Bina Generasi",
-    description: "Program pembinaan anak dan lansia, dokumentasi kegiatan, serta berita khusus bina generasi.",
+    id: "kependudukan",
+    title: "Modul Kependudukan",
+    description: "Program pembinaan anak dan lansia, dokumentasi kegiatan, serta berita khusus Kependudukan.",
     icon: FaChild,
-    href: "/bina-generasi",
+    href: "/kependudukan",
   },
   {
     id: "keluarga",

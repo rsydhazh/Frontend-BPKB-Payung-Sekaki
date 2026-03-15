@@ -8,25 +8,27 @@ export default function GaleriKeluargaPage() {
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
       
       {/* HEADER PAGE */}
-      <section className="pb-16 px-8 text-center max-w-3xl mx-auto">
-        <div className="w-16 h-16 bg-[#0a1680]/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <FiCamera className="text-3xl text-[#0a1680]" />
+      <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
+          <FiCamera className="text-5xl text-[#f1b94c] mx-auto mb-6" />
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
+            Galeri <span className="text-[#f1b94c]">Kegiatan</span>
+          </h1>
+          <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+            Dokumentasi visual dari berbagai kegiatan BKR dan UPPKA di masyarakat.
+          </p>
         </div>
-        <h1 className="text-4xl lg:text-5xl font-extrabold text-[#1a1a1a] mb-4 tracking-tight">
-          Galeri <span className="text-[#0a1680]">Kegiatan</span>
-        </h1>
-        <p className="text-gray-500 text-lg font-medium">
-          Dokumentasi visual dari berbagai kegiatan BKR dan UPPKA di masyarakat.
-        </p>
       </section>
 
       {/* KONTEN GALERI */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-16">
+      <section className="max-w-7xl mx-auto px-6 lg:px-16 -mt-20 relative z-20">
         {galeriData.length === 0 ? (
           
           /* EMPTY STATE */
-          <div className="bg-white rounded-3xl shadow-sm p-20 text-center border border-dashed border-gray-300 flex flex-col items-center justify-center">
-            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+          <div className="bg-white rounded-[2.5rem] shadow-[0_15px_50px_rgba(10,22,128,0.08)] p-20 text-center border border-gray-100 flex flex-col items-center justify-center">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
               <FiImage className="text-gray-300" size={48} />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Belum Ada Dokumentasi</h3>
@@ -38,7 +40,7 @@ export default function GaleriKeluargaPage() {
           /* GRID GAMBAR */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {galeriData.map((item) => (
-              <div key={item.id} className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-xl h-72 bg-gray-100 border border-gray-200 transition-all duration-300">
+              <div key={item.id} className="group relative rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-xl h-72 bg-white border border-gray-100 transition-all duration-300">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={item.image_url} 

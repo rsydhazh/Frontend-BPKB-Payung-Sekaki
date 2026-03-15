@@ -18,7 +18,7 @@ export default function BeritaBinaGenerasiPage() {
           Berita & <span className="text-[#0a1680]">Informasi</span>
         </h1>
         <p className="text-gray-500 text-lg font-medium">
-          Kumpulan artikel, pengumuman, dan berita terbaru seputar program Bina Generasi.
+          Kumpulan artikel, pengumuman, dan berita terbaru seputar program Kependudukan.
         </p>
       </section>
 
@@ -40,7 +40,7 @@ export default function BeritaBinaGenerasiPage() {
           /* GRID BERITA */
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {beritaData.map((berita) => (
-              <Link href={`/bina-generasi/berita/${berita.id}`} key={berita.id} className="group bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.12)] border border-gray-100 flex flex-col overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+              <Link href={`/kependudukan/berita/${berita.id}`} key={berita.id} className="group bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.12)] border border-gray-100 flex flex-col overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
                 
                 <div className="h-56 overflow-hidden relative bg-gray-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
