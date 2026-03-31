@@ -11,7 +11,8 @@ export default function UmumHomePage() {
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full pt-14 pb-20 overflow-hidden rounded-b-[4rem] shadow-[0_10px_30px_rgba(10,22,128,0.15)]">
+
+      <section className="relative w-full pt-14 pb-28 overflow-hidden rounded-b-[4rem] shadow-[0_10px_30px_rgba(10,22,128,0.15)]">
         <div className="absolute inset-0 bg-linear-to-br from-[#050b40] via-[#0a1680] to-[#1425b0]"></div>
         <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,#ffffff_50%,transparent_75%,transparent_100%)] bg-size-[20px_20px]"></div>
 
@@ -19,10 +20,10 @@ export default function UmumHomePage() {
           <span className="inline-block py-1 px-4 rounded-full bg-white/10 text-[#fbedb0] font-bold text-xs mb-6 border border-white/10 tracking-widest uppercase backdrop-blur-sm">
             Selamat Datang di
           </span>
-          <h1 className="text-4xl lg:text-6xl font-black text-white leading-tight mb-6 tracking-tight drop-shadow-lg">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 tracking-tight drop-shadow-md">
             Balai Penyuluh KB <span className="text-[#f1b94c]">Payung Sekaki</span>
           </h1>
-          <p className="text-[#93b2f8] text-lg font-medium leading-relaxed max-w-2xl mx-auto">
+          <p className="text-[#93b2f8] text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
             Pusat informasi kegiatan, layanan kependudukan, dan program kesejahteraan masyarakat secara transparan dan akurat.
           </p>
         </div>

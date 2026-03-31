@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiSend, FiCheckCircle, FiInfo, FiRefreshCcw } from "react-icons/fi";
+import { FiSend, FiCheckCircle, FiInfo, FiEdit3 } from "react-icons/fi";
 
 export default function UpdateDataKependudukanPage() {
   // State disesuaikan untuk kebutuhan Update Data Mikro
@@ -46,7 +46,7 @@ export default function UpdateDataKependudukanPage() {
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
       {/* 1. HEADER BIRU MELENGKUNG */}
-      <section className="bg-[#0a1680] text-white pt-32 pb-28 overflow-hidden rounded-b-[4rem] shadow-lg relative">
+      {/* <section className="bg-[#0a1680] text-white pt-32 pb-28 overflow-hidden rounded-b-[4rem] shadow-lg relative">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
         
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
@@ -58,7 +58,21 @@ export default function UpdateDataKependudukanPage() {
             Laporkan perubahan data keluarga Anda secara mandiri untuk mendukung keakuratan informasi pada Rumah Dataku.
           </p>
         </div>
-      </section>
+      </section> */}
+
+      <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+                    
+            <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
+              <FiEdit3 className="text-5xl text-[#f1b94c] mx-auto mb-6" />
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
+                  Update <span className="text-[#f1b94c]"> Data</span>
+              </h1>
+              <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+                  Laporkan perubahan data keluarga Anda secara mandiri untuk mendukung keakuratan informasi pada Rumah Dataku.
+              </p>
+            </div>
+            </section>
 
       {/* 2. KOTAK FORMULIR (Menimpa Header Biru / Overlap) */}
       <div className="max-w-3xl mx-auto px-6 lg:px-8 -mt-16 relative z-20">

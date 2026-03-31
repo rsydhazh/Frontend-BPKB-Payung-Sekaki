@@ -9,15 +9,15 @@ export default function BeritaBinaGenerasiPage() {
   return (
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
       
-      {/* 1. HEADER PAGE  */}
-      <section className="pb-16 px-8 text-center max-w-3xl mx-auto">
-        <div className="w-16 h-16 bg-[#0a1680]/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
+      {/* 1. HEADER  */}
+      <section className="pt-2 pb-32 px-8 text-center max-w-3xl mx-auto relative">
+        <div className="w-16 h-16 bg-[#0a1680]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
           <FiFileText className="text-3xl text-[#0a1680]" />
         </div>
-        <h1 className="text-4xl lg:text-5xl font-extrabold text-[#1a1a1a] mb-4 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-[#1a1a1a] mb-6 tracking-tight">
           Berita & <span className="text-[#0a1680]">Informasi</span>
         </h1>
-        <p className="text-gray-500 text-lg font-medium">
+        <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
           Kumpulan artikel, pengumuman, dan berita terbaru seputar program Kependudukan.
         </p>
       </section>

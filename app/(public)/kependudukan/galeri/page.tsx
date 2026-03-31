@@ -8,14 +8,19 @@ export default function GaleriPage() {
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
       {/* HEADER PAGE */}
-      <section className="bg-[#0a1680] text-white pt-14 pb-24 px-8 text-center rounded-b-[3rem] shadow-lg relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-        <div className="relative z-10 max-w-2xl mx-auto">
-          <FiCamera className="text-4xl text-[#f1b94c] mx-auto mb-4" />
-          <h1 className="text-4xl font-extrabold mb-4">Galeri <span className="text-[#f1b94c]">Kegiatan</span></h1>
-          <p className="text-[#93b2f8]">Dokumentasi visual dari berbagai program dan layanan kami di masyarakat.</p>
-        </div>
-      </section>
+      <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+                     
+            <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
+                <FiCamera className="text-5xl text-[#f1b94c] mx-auto mb-6" />
+              <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
+                          Galeri <span className="text-[#f1b94c]">Kegiatan</span>
+              </h1>
+              <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+                  Dokumentasi lapangan setiap kegiatan pada program-program yang dilakukan dalam Modul Kependudukan.
+              </p>
+            </div>
+        </section>
 
       {/* KONTEN GALERI */}
       <section className="max-w-7xl mx-auto px-6 lg:px-8 -mt-12 relative z-20">

@@ -18,20 +18,20 @@ export default async function UmumTentangPage() {
   const posyanduList = settings.daftar_posyandu || [];
 
   return (
-    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-20">
+    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-8">
       
-      {/* 1. HEADER TENTANG KAMI */}
-      <div className="max-w-7xl mx-auto px-8 lg:px-16 text-center mb-16">
-        <div className="w-16 h-16 bg-[#0a1680]/5 text-[#0a1680] rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <FiInfo size={32} />
+      {/* 1. HEADER*/}
+      <section className="pt-6 pb-32 px-8 text-center max-w-3xl mx-auto relative">
+        <div className="w-16 h-16 bg-[#0a1680]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+          <FiInfo className="text-3xl text-[#0a1680]" />
         </div>
-        <h1 className="text-4xl md:text-5xl font-black text-[#1a1a1a] mb-6 tracking-tight">
-          Tentang <span className="text-[#0a1680]">{settings.nama_balai || "Payung Sekaki"}</span>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-[#1a1a1a] mb-6 tracking-tight">
+          Tentang <span className="text-[#0a1680]">Balai Penyuluh KB Payung Sekaki</span>
         </h1>
-        <p className="text-gray-500 text-lg max-w-3xl mx-auto font-medium leading-relaxed">
-          {settings.alamat || "Profil, sejarah, visi misi, struktur organisasi, dan daftar layanan posyandu di wilayah binaan Balai KB Payung Sekaki."}
+        <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+          Profil, sejarah, visi misi, struktur organisasi, dan daftar layanan posyandu di wilayah binaan Balai KB Payung Sekaki.
         </p>
-      </div>
+      </section>
 
       {/* 2. PROFIL (Sejarah, Visi, Misi, Struktur Organisasi) */}
       <section className="max-w-7xl mx-auto px-8 lg:px-16 mb-20 space-y-8">

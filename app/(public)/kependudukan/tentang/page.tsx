@@ -4,20 +4,18 @@ export default function TentangKependudukanPage() {
   return (
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
       
-      {/* HEADER BIRU */}
-      <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
-          <FiInfo className="text-5xl text-[#f1b94c] mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
-            Tentang <span className="text-[#f1b94c]">Kependudukan</span>
-          </h1>
-          <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
-            Mengenal lebih dekat wadah program strategis kependudukan dan intervensi cepat (Quick Wins) di wilayah binaan.
-          </p>
-        </div>
-      </section>
+      {/* HEADER */}
+      <section className="pt-2 pb-32 px-8 text-center max-w-3xl mx-auto relative">
+              <div className="w-16 h-16 bg-[#0a1680]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <FiInfo className="text-3xl text-[#0a1680]" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-[#1a1a1a] mb-6 tracking-tight">
+                Tentang <span className="text-[#0a1680]">Modul Kependudukan</span>
+              </h1>
+              <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+                Mengenal lebih dekat wadah program strategis kependudukan dan intervensi cepat (Quick Wins) di wilayah binaan Payung Sekaki.
+              </p>
+            </section>
 
       {/* KONTEN   */}
       <section className="max-w-4xl mx-auto px-6 lg:px-16 -mt-20 relative z-20">
