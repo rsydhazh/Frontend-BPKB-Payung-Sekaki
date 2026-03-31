@@ -14,4 +14,9 @@ export interface RegistrationPayload {
   nik: string;
   address: string;
   phone_number: string;
+  tanggal_lahir?: string;
+  faskes?: string;
+  status_peserta?: string;
+  jenis_kb?: string;
+  tanggal_pelayanan?: string;
 }

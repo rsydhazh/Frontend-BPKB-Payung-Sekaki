@@ -1,0 +1,119 @@
+"use client";
+
+import { useState } from "react";
+import { FiSend, FiCheckCircle, FiInfo, FiRefreshCcw } from "react-icons/fi";
+
+export default function UpdateDataKependudukanPage() {
+  // State disesuaikan untuk kebutuhan Update Data Mikro
+  const [formData, setFormData] = useState({
+    nama_kepala_keluarga: "",
+    nik_kepala: "",
+    jumlah_anggota: "",
+    alamat: "",
+    alasan_update: "Perubahan Anggota Keluarga", // Nilai default dropdown
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ type: "success" | "error" | null; message: string }>({ type: null, message: "" });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setSubmitStatus({ type: null, message: "" });
+
+    setTimeout(() => {
+      setSubmitStatus({ 
+        type: "success", 
+        message: "Laporan pembaruan data berhasil dikirim! Petugas Balai KB akan segera memverifikasi data Anda untuk Rumah Dataku." 
+      });
+      setIsLoading(false);
+      
+      // Kosongkan form setelah berhasil
+      setFormData({ 
+        nama_kepala_keluarga: "", 
+        nik_kepala: "", 
+        jumlah_anggota: "", 
+        alamat: "", 
+        alasan_update: "Perubahan Anggota Keluarga" 
+      });
+
+      // Hilangkan notifikasi setelah 7 detik
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
+    }, 1500);
+  };
+
+  return (
+    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
+      
+      {/* 1. HEADER BIRU MELENGKUNG */}
+      <section className="bg-[#0a1680] text-white pt-32 pb-28 overflow-hidden rounded-b-[4rem] shadow-lg relative">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
+        
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
+          <FiRefreshCcw className="text-5xl text-[#f1b94c] mx-auto mb-6" />
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
+            Update <span className="text-[#f1b94c]">Data Mikro</span>
+          </h1>
+          <p className="text-[#93b2f8] font-medium text-lg leading-relaxed max-w-2xl mx-auto">
+            Laporkan perubahan data keluarga Anda secara mandiri untuk mendukung keakuratan informasi pada Rumah Dataku.
+          </p>
+        </div>
+      </section>
+
+      {/* 2. KOTAK FORMULIR (Menimpa Header Biru / Overlap) */}
+      <div className="max-w-3xl mx-auto px-6 lg:px-8 -mt-16 relative z-20">
+        
+        <div className="bg-white rounded-[2.5rem] shadow-[0_15px_50px_rgba(10,22,128,0.1)] border border-gray-100 p-8 lg:p-12">
+          
+          {/* Notifikasi Status */}
+          {submitStatus.type && (
+            <div className={`mb-8 p-4 rounded-xl flex items-start gap-3 ${submitStatus.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+              {submitStatus.type === 'success' ? <FiCheckCircle size={20} className="mt-0.5 shrink-0" /> : <FiInfo size={20} className="mt-0.5 shrink-0" />}
+              <span className="font-bold text-sm leading-relaxed">{submitStatus.message}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Nama Kepala Keluarga *</label>
+                <input required type="text" value={formData.nama_kepala_keluarga} onChange={(e) => setFormData({...formData, nama_kepala_keluarga: e.target.value})} placeholder="Sesuai KTP" className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#0a1680] bg-gray-50 focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">NIK Kepala Keluarga *</label>
+                <input required type="text" maxLength={16} value={formData.nik_kepala} onChange={(e) => setFormData({...formData, nik_kepala: e.target.value})} placeholder="16 Digit NIK" className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#0a1680] bg-gray-50 focus:bg-white transition-all" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Jumlah Anggota Keluarga *</label>
+                <input required type="number" min="1" value={formData.jumlah_anggota} onChange={(e) => setFormData({...formData, jumlah_anggota: e.target.value})} placeholder="Contoh: 4" className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#0a1680] bg-gray-50 focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Alasan Pembaruan Data *</label>
+                <select required value={formData.alasan_update} onChange={(e) => setFormData({...formData, alasan_update: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#0a1680] bg-gray-50 focus:bg-white transition-all appearance-none cursor-pointer">
+                  <option value="Perubahan Anggota Keluarga">Perubahan Anggota Keluarga (Lahir/Wafat)</option>
+                  <option value="Perpindahan Domisili">Perpindahan Domisili / Pindah Rumah</option>
+                  <option value="Perbaikan Data Profil">Perbaikan Kesalahan Data Profil</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Alamat Lengkap Saat Ini *</label>
+              <textarea required rows={3} value={formData.alamat} onChange={(e) => setFormData({...formData, alamat: e.target.value})} placeholder="Tuliskan alamat domisili lengkap beserta RT/RW..." className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-[#0a1680] bg-gray-50 focus:bg-white transition-all resize-none"></textarea>
+            </div>
+
+            <div className="pt-4">
+              <button type="submit" disabled={isLoading} className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-white transition-all shadow-lg transform active:scale-95 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0a1680] hover:bg-[#f1b94c] hover:shadow-[#f1b94c]/30'}`}>
+                <FiSend size={18} /> {isLoading ? "Mengirim Laporan..." : "Kirim Pembaruan Data Mikro"}
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </main>
+  );
+}

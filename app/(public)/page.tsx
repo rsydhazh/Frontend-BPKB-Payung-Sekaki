@@ -45,7 +45,7 @@ export default function PortalPage() {
             </div>
             <div>
               <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-md">
-                Portal BKB Payung Sekaki
+                Portal BPKB Payung Sekaki
               </h1>
               <p className="text-[#93b2f8] text-sm font-medium tracking-wide">
                 Pusat Informasi & Pelayanan Masyarakat

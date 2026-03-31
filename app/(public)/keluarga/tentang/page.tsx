@@ -1,22 +1,20 @@
-import { FiInfo, FiHeart, FiShield, FiCheckCircle } from "react-icons/fi";
+import { FiFileText, FiHeart, FiShield, FiCheckCircle } from "react-icons/fi";
 
 export default function TentangKeluargaPage() {
   return (
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
       
-      {/* HEADER BIRU MELENGKUNG */}
-      <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
-          <FiInfo className="text-5xl text-[#f1b94c] mx-auto mb-6" />
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
-            Tentang <span className="text-[#f1b94c]">Modul Keluarga</span>
-          </h1>
-          <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
-            Mengenal lebih dekat program pemberdayaan, ketahanan, dan keluarga berencana di Balai KB Payung Sekaki.
-          </p>
-        </div>
+      {/* HEADER  */}
+      <section className="pb-16 px-8 text-center max-w-3xl mx-auto">
+              <div className="w-16 h-16 bg-[#0a1680]/5 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <FiFileText className="text-3xl text-[#0a1680]" />
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-extrabold text-[#1a1a1a] mb-4 tracking-tight">
+                Tentang <span className="text-[#0a1680]">Modul Keluarga</span>
+              </h1>
+              <p className="text-gray-500 text-lg font-medium">
+                Mengenal lebih dekat program pemberdayaan, ketahanan, dan keluarga berencana di Balai KB Payung Sekaki.
+              </p>
       </section>
 
       {/* KONTEN MENGAMBANG */}
