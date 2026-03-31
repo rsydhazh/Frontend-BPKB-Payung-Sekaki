@@ -2,7 +2,7 @@ import { FiInfo, FiTarget, FiUsers, FiZap, FiCheckCircle } from "react-icons/fi"
 
 export default function TentangKependudukanPage() {
   return (
-    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
+    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
       {/* HEADER */}
       <section className="pt-2 pb-32 px-8 text-center max-w-3xl mx-auto relative">
