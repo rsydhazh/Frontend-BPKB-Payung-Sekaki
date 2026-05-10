@@ -16,7 +16,7 @@ export const navMenus: Record<"umum" | "kependudukan" | "keluarga", NavItem[]> =
     { label: "Tentang", href: "/kependudukan/tentang" },
     { label: "Galeri", href: "/kependudukan/galeri" },
     { label: "Berita", href: "/kependudukan/berita" },
-    { label: "Update Data", href: "/kependudukan/update-data" }
+    { label: "Cek Kesehatan", href: "/kependudukan/cek-kesehatan" }
   ],
   keluarga: [
     { label: "Beranda", href: "/keluarga" },

@@ -83,17 +83,34 @@ export default function BeritaAdminPage() {
     setIsLoading(true);
     try {
       if (isEditMode && editId !== null) {
-        // Nanti diganti fungsi updateNews jika API Mba Rani sudah siap
+        // Logika update (nanti)
         console.log("Mengupdate data dengan ID:", editId);
         showToast("Berita berhasil diperbarui");
       } else {
-        await createNews({ title, content, cover_image: previewUrl || coverImage, category });
-        showToast("Berita berhasil ditambahkan");
+        // --- PROSES BUNGKUS DATA KE FORMDATA ---
+const formData = new FormData();
+formData.append("title", title);
+formData.append("content", content);
+
+// Ubah 'category' jadi 'modul' biar cocok sama req.body di backend
+// Kalau di database lu mintanya huruf kecil, lu bisa pakai category.toLowerCase()
+formData.append("modul", category.toLowerCase());
+
+if (selectedFile) {
+  // GANTI INI JADI 'gambar' SESUAI PERMINTAAN BACKEND
+  formData.append("gambar", selectedFile); 
+}
+
+// Kirim ke API
+await createNews(formData);
+showToast("Berita berhasil ditambahkan");
       }
+      
       setIsModalOpen(false);
       refreshData();
-    } catch {
-      setErrorMsg("Gagal menyimpan data ke server.");
+    } catch (error: any) {
+      console.error("Gagal save:", error);
+      setErrorMsg(error.message || "Gagal menyimpan data ke server.");
     } finally {
       setIsLoading(false);
     }
@@ -209,10 +226,13 @@ export default function BeritaAdminPage() {
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Kategori Modul</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] transition-all appearance-none cursor-pointer">
-                      <option value="Umum">Umum</option>
-                      <option value="Kependudukan">Kependudukan</option>
-                      <option value="Keluarga">Keluarga</option>
+                    <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)} 
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] transition-all appearance-none cursor-pointer">
+                      <option value="umum">Umum</option>
+                      <option value="kependudukan">Kependudukan</option>
+                      <option value="keluarga">Keluarga</option>
                     </select>
                   </div>
                 </div>

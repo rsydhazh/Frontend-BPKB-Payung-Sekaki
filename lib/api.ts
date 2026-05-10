@@ -41,8 +41,9 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     if (!res.ok) {
       // Mengambil pesan error asli dari backend (misal: "Email salah"), 
       // jika tidak ada, tampilkan status HTTP bawaan.
-      const errorMessage = data?.pesan || data?.message || `Terjadi kesalahan sistem (${res.status})`;
-      throw new Error(errorMessage);
+      // Ganti baris errorMessage lu jadi begini:
+        const errorMessage = data?.error || data?.pesan || data?.message || `Terjadi kesalahan sistem (${res.status})`;
+        throw new Error(errorMessage);
     }
 
     return data;

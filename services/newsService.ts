@@ -5,10 +5,11 @@ export async function getNews(): Promise<News[]> {
   return apiFetch("/news");
 }
 
-export async function createNews(data: NewsPayload) {
+export async function createNews(formData: FormData) {
+  // Karena ini FormData, kita gak usah pakai JSON.stringify
   return apiFetch("/news", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: formData, 
   });
 }
 

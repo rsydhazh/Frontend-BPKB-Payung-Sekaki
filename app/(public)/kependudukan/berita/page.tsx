@@ -1,15 +1,40 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { FiCalendar, FiArrowRight, FiFileText } from "react-icons/fi";
+import { FiCalendar, FiArrowRight, FiFileText, FiClock } from "react-icons/fi"; 
 import { News } from "@/types/news";
+import { getNews } from "@/services/newsService";
 
 export default function BeritaBinaGenerasiPage() {
- 
-  const beritaData: News[] = [];
+  const [beritaData, setBeritaData] = useState<News[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "Baru saja";
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  };
+
+  useEffect(() => {
+    async function fetchBerita() {
+      try {
+        const data = await getNews();
+        const beritaKependudukan = data.filter(
+          (item) => item.modul === "kependudukan"
+        );
+        setBeritaData(beritaKependudukan);
+      } catch (error) {
+        console.error("Gagal ambil berita:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchBerita();
+  }, []);
 
   return (
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans pt-14">
-      
-      {/* 1. HEADER  */}
+      {/* 1. HEADER */}
       <section className="pt-2 pb-32 px-8 text-center max-w-3xl mx-auto relative">
         <div className="w-16 h-16 bg-[#0a1680]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
           <FiFileText className="text-3xl text-[#0a1680]" />
@@ -22,11 +47,10 @@ export default function BeritaBinaGenerasiPage() {
         </p>
       </section>
 
-      {/* 2. KONTEN BERITA */}
       <section className="max-w-7xl mx-auto px-6 lg:px-16">
-        {beritaData.length === 0 ? (
-          
-          /* EMPTY STATE */
+        {isLoading ? (
+          <div className="text-center py-20 text-gray-400">Sedang memuat berita...</div>
+        ) : beritaData.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-sm p-20 text-center border border-dashed border-gray-300 flex flex-col items-center justify-center">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <FiFileText className="text-gray-300" size={48} />
@@ -34,27 +58,32 @@ export default function BeritaBinaGenerasiPage() {
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Belum Ada Berita</h3>
             <p className="text-gray-400 font-medium">Informasi dan berita terbaru akan segera dipublikasikan oleh Admin.</p>
           </div>
-
         ) : (
-          
-          /* GRID BERITA */
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {beritaData.map((berita) => (
-              <Link href={`/kependudukan/berita/${berita.id}`} key={berita.id} className="group bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.12)] border border-gray-100 flex flex-col overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
-                
+              <Link 
+                href={`/kependudukan/berita/${berita.id}`} 
+                key={berita.id} 
+                className="group bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.12)] border border-gray-100 flex flex-col overflow-hidden transform hover:-translate-y-2 transition-all duration-300"
+              >
                 <div className="h-56 overflow-hidden relative bg-gray-100">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img 
-                    src={berita.cover_image || "https://via.placeholder.com/400x300?text=Foto+Berita"} 
-                    alt={berita.title} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                  />
+                  {berita.cover_image ? (
+                    <img 
+                      src={berita.cover_image} 
+                      alt={berita.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-[#0a1680]/5 group-hover:scale-110 transition-transform duration-700 flex items-center justify-center">
+                       <FiFileText className="text-gray-200" size={40} />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="p-8 flex flex-col flex-1">
                   <div className="flex items-center gap-2 text-xs text-[#f1b94c] font-bold mb-3 uppercase tracking-wider">
-                    <FiCalendar /> 
-                    {berita.created_at ? new Date(berita.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : "Tanggal Dipublikasi"}
+                    <FiClock size={14} /> 
+                    {formatDate(berita.created_at)}
                   </div>
                   
                   <h3 className="text-xl font-bold text-[#1a1a1a] mb-3 group-hover:text-[#0a1680] transition-colors line-clamp-2">
@@ -72,10 +101,8 @@ export default function BeritaBinaGenerasiPage() {
               </Link>
             ))}
           </div>
-
         )}
       </section>
-
     </main>
   );
 }
