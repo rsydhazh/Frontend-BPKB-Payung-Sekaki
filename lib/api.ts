@@ -12,7 +12,7 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  // Otomatis menggunakan JSON, KECUALI jika Ndoro mengirimkan file (FormData)
+  // Otomatis menggunakan JSON
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
@@ -47,9 +47,11 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
     return data;
     
-  } catch (error: any) {
-    // Mencatat error di console untuk mempermudah Ndoro saat debugging
-    console.error(`[API Gatekeeper] Gagal memanggil ${endpoint}:`, error.message);
+  } catch (error) { // <-- PERUBAHAN DI SINI (Tanpa ': any')
+    // Mencatat error di console dengan aman untuk mempermudah Ndoro saat debugging
+    const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan yang tidak diketahui";
+    console.error(`[API Gatekeeper] Gagal memanggil ${endpoint}:`, errorMessage);
+    
     throw error;
   }
 }
