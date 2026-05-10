@@ -1,13 +1,14 @@
 import { apiFetch } from "@/lib/api";
-import { Documentation, DocumentationPayload } from "@/types/documentation";
+import { Documentation } from "@/types/documentation";
 
 export async function getDocumentation(): Promise<Documentation[]> {
   return apiFetch("/documentation");
 }
 
-export async function createDocumentation(data: DocumentationPayload) {
+
+export async function createDocumentation(formData: FormData) {
   return apiFetch("/documentation", {
     method: "POST",
-    body: JSON.stringify(data),
+    body: formData, 
   });
 }

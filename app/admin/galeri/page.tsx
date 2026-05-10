@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiAlertCircle, FiCheckCircle, FiImage, FiUploadCloud } from "react-icons/fi";
+// 1. IMPORT SERVICE API NDORO DI SINI
+import { getDocumentation, createDocumentation } from "@/services/documentationService";
 
 interface GalleryData {
   id: number;
@@ -11,9 +13,7 @@ interface GalleryData {
 }
 
 export default function DokumentasiAdminPage() {
-  const [galleryList, setGalleryList] = useState<GalleryData[]>([
-    { id: 1, title: "Kegiatan Posyandu RW 05", category: "Umum", image_url: "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800" },
-  ]);
+  const [galleryList, setGalleryList] = useState<GalleryData[]>([]);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -28,8 +28,18 @@ export default function DokumentasiAdminPage() {
   const [toastMsg, setToastMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // 2. FUNGSI LOADDATA ASLI DARI DATABASE
   const loadData = useCallback(async () => {
-    // Fetch API Ndoro di sini nantinya
+    setIsLoading(true);
+    try {
+      const data = await getDocumentation();
+      // Pastikan format data dari API sesuai dengan interface GalleryData
+      setGalleryList(data as unknown as GalleryData[]); 
+    } catch (error) {
+      console.error("Gagal memuat galeri:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -66,6 +76,7 @@ export default function DokumentasiAdminPage() {
     }
   };
 
+  // 3. FUNGSI HANDLESAVE DENGAN FORMDATA (KIRIM KE BACKEND)
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || (!selectedFile && !previewUrl)) {
@@ -74,37 +85,50 @@ export default function DokumentasiAdminPage() {
     }
 
     setIsLoading(true);
+    setErrorMsg("");
     
-    setTimeout(() => {
-      // 1. Logika untuk merender perubahan di layar (Simulasi sebelum ada API)
+    try {
       if (isEditMode && editId !== null) {
         setGalleryList(prev => prev.map(item => 
           item.id === editId 
             ? { ...item, title, category, image_url: previewUrl || item.image_url } 
             : item
         ));
-        showToast("Data galeri berhasil diperbarui");
+        showToast("Data galeri berhasil diperbarui (Simulasi Edit)");
+        setIsModalOpen(false);
       } else {
-        const newGallery = {
-          id: Date.now(),
-          title,
-          category,
-          // Jika tidak ada gambar, pakai placeholder. Jika ada, pakai preview-nya.
-          image_url: previewUrl || "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800" 
-        };
-        setGalleryList(prev => [...prev, newGallery]);
-        showToast("Foto berhasil diunggah");
+        // PROSES KIRIM DATA BARU KE API
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("category", category);
+        
+        // Memasukkan file fisik gambar ke dalam FormData
+        if (selectedFile) {
+          // INFO UNTUK MBA RANI: Parameter file-nya bernama "image"
+          formData.append("image", selectedFile); 
+        }
+
+        // Tembak API-nya! (di-cast ke 'any' agar TypeScript tidak protes soal tipe)
+        await createDocumentation(formData);
+        
+        showToast("Foto berhasil diunggah ke server!");
+        setIsModalOpen(false);
+        
+        // Panggil ulang loadData agar tabel langsung menampilkan foto yang baru saja masuk DB
+        loadData(); 
       }
-      
-      setIsModalOpen(false);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan ke server.";
+      setErrorMsg(errorMessage);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const handleDelete = async (id: number) => {
     const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus foto ini?");
     if (confirmDelete) {
-      // 2. Jurus sakti melenyapkan foto dari layar
+      // Nanti tambahkan API Delete di sini. Sementara masih simulasi.
       setGalleryList(prev => prev.filter(item => item.id !== id));
       showToast("Foto berhasil dihapus");
     }
@@ -137,29 +161,39 @@ export default function DokumentasiAdminPage() {
       </div>
 
       {/* Grid Galeri */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {galleryList.map((item) => (
-          <div key={item.id} className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden group hover:-translate-y-1 transition-transform">
-            <div className="relative h-48 bg-gray-100 overflow-hidden">
-              <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                <button onClick={() => handleOpenEdit(item)} className="p-3 bg-white text-yellow-600 rounded-xl hover:scale-110 transition-transform shadow-lg" title="Edit">
-                  <FiEdit2 size={18} />
-                </button>
-                <button onClick={() => handleDelete(item.id)} className="p-3 bg-red-500 text-white rounded-xl hover:scale-110 transition-transform shadow-lg" title="Hapus">
-                  <FiTrash2 size={18} />
-                </button>
+      {galleryList.length === 0 ? (
+        <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 p-20 text-center flex flex-col items-center justify-center">
+          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
+            <FiImage size={40} className="text-gray-300" />
+          </div>
+          <h3 className="text-gray-800 font-bold text-xl mb-2">Belum ada foto galeri</h3>
+          <p className="text-gray-400 text-sm">Silakan klik tombol &quot;Tambah Foto&quot; di atas untuk mulai mengunggah dokumentasi.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {galleryList.map((item) => (
+            <div key={item.id} className="bg-white rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden group hover:-translate-y-1 transition-transform">
+              <div className="relative h-48 bg-gray-100 overflow-hidden">
+                <img src={item.image_url} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                  <button onClick={() => handleOpenEdit(item)} className="p-3 bg-white text-yellow-600 rounded-xl hover:scale-110 transition-transform shadow-lg" title="Edit">
+                    <FiEdit2 size={18} />
+                  </button>
+                  <button onClick={() => handleDelete(item.id)} className="p-3 bg-red-500 text-white rounded-xl hover:scale-110 transition-transform shadow-lg" title="Hapus">
+                    <FiTrash2 size={18} />
+                  </button>
+                </div>
+              </div>
+              <div className="p-5">
+                <span className="inline-block px-3 py-1 bg-[#0a1680]/10 text-[#0a1680] rounded-full text-[10px] font-bold uppercase tracking-wider mb-3">
+                  {item.category}
+                </span>
+                <h3 className="font-bold text-[#1a1a1a] text-sm line-clamp-2 leading-snug">{item.title}</h3>
               </div>
             </div>
-            <div className="p-5">
-              <span className="inline-block px-3 py-1 bg-[#0a1680]/10 text-[#0a1680] rounded-full text-[10px] font-bold uppercase tracking-wider mb-3">
-                {item.category}
-              </span>
-              <h3 className="font-bold text-[#1a1a1a] text-sm line-clamp-2 leading-snug">{item.title}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* MODAL FORM MEWAH */}
       {isModalOpen && (
@@ -167,7 +201,7 @@ export default function DokumentasiAdminPage() {
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="px-8 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-xl font-extrabold text-[#1a1a1a]">{isEditMode ? "Edit Foto" : "Unggah Foto Baru"}</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-all"><FiX size={20} /></button>
+              <button type="button" onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-all"><FiX size={20} /></button>
             </div>
 
             <form onSubmit={handleSave} className="p-8 space-y-6">
