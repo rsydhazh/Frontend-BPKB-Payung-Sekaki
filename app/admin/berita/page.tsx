@@ -10,7 +10,7 @@ export default function BeritaAdminPage() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
   
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Umum");
@@ -116,7 +116,7 @@ showToast("Berita berhasil ditambahkan");
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus berita ini?");
     if (confirmDelete) {
       try {

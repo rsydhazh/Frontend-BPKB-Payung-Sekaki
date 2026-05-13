@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { FiUsers, FiZap, FiActivity, FiArrowRight, FiClock } from "react-icons/fi";
 import { getNews } from "@/services/newsService"; 
+import { News } from "@/types/news";
 
 export default async function BerandaKependudukan() {
-  let highlightBerita = [];
+  let highlightBerita: News[] = []; 
   try {
     const allNews = await getNews();
     highlightBerita = allNews.slice(0, 3); 
+    
     console.log("Isi data berita dari API:", allNews[0]);
   } catch (error) {
     console.error("Gagal mengambil data berita:", error);
