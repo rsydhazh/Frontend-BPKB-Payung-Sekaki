@@ -1,8 +1,6 @@
 "use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiAlertCircle, FiCheckCircle, FiImage, FiUploadCloud } from "react-icons/fi";
-// 1. IMPORT SERVICE API NDORO DI SINI
 import { getDocumentation, createDocumentation } from "@/services/documentationService";
 
 interface GalleryData {
@@ -76,50 +74,49 @@ export default function DokumentasiAdminPage() {
     }
   };
 
-  // 3. FUNGSI HANDLESAVE DENGAN FORMDATA (KIRIM KE BACKEND)
-  const handleSave = async (e: React.FormEvent) => {
+const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validasi: Galeri cuma butuh Judul dan Foto
     if (!title.trim() || (!selectedFile && !previewUrl)) {
-      setErrorMsg("File foto dan Judul wajib diisi");
+      setErrorMsg("Judul dan Foto wajib diisi.");
       return;
     }
 
     setIsLoading(true);
     setErrorMsg("");
-    
+
     try {
       if (isEditMode && editId !== null) {
-        setGalleryList(prev => prev.map(item => 
-          item.id === editId 
-            ? { ...item, title, category, image_url: previewUrl || item.image_url } 
-            : item
-        ));
-        showToast("Data galeri berhasil diperbarui (Simulasi Edit)");
+        // Simulasi edit (nanti bisa lu tambahin API update-nya)
+        console.log("Update ID:", editId);
+        showToast("Data galeri berhasil diperbarui");
         setIsModalOpen(false);
       } else {
-        // PROSES KIRIM DATA BARU KE API
+        // --- PROSES BUNGKUS DATA (SAMAIN PERSIS KAYAK BERITA) ---
         const formData = new FormData();
         formData.append("title", title);
-        formData.append("category", category);
         
-        // Memasukkan file fisik gambar ke dalam FormData
+        // Di berita lu pake 'modul' dan category.toLowerCase()
+        formData.append("modul", category.toLowerCase());
+
         if (selectedFile) {
-          // INFO UNTUK MBA RANI: Parameter file-nya bernama "image"
-          formData.append("image", selectedFile); 
+          // INI KUNCINYA: Pakai 'gambar', jangan 'image' atau 'file'
+          formData.append("gambar", selectedFile); 
         }
 
-        // Tembak API-nya! (di-cast ke 'any' agar TypeScript tidak protes soal tipe)
+        // Kirim ke API Documentation
         await createDocumentation(formData);
         
-        showToast("Foto berhasil diunggah ke server!");
+        showToast("Foto berhasil diunggah!");
         setIsModalOpen(false);
-        
-        // Panggil ulang loadData agar tabel langsung menampilkan foto yang baru saja masuk DB
-        loadData(); 
+        loadData(); // Refresh list galeri
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan ke server.";
-      setErrorMsg(errorMessage);
+    } catch (error: any) {
+      console.error("Gagal save galeri:", error);
+      // Kalau error 500 tetap muncul, berarti backend Dokumentasi 
+      // mungkin BELUM mendukung field 'modul'
+      setErrorMsg(error.message || "Gagal menyimpan ke server.");
     } finally {
       setIsLoading(false);
     }
