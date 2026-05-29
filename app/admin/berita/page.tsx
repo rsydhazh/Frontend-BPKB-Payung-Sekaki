@@ -13,7 +13,7 @@ export default function BeritaAdminPage() {
   const [editId, setEditId] = useState<string | null>(null);
   
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Umum");
+  const [category, setCategory] = useState("umum");
   const [content, setContent] = useState("");
   const [coverImage, setCoverImage] = useState("");
   
@@ -42,7 +42,7 @@ export default function BeritaAdminPage() {
     setIsEditMode(false);
     setEditId(null);
     setTitle("");
-    setCategory("Umum");
+    setCategory("umum");
     setContent("");
     setCoverImage("");
     setSelectedFile(null);
@@ -55,7 +55,7 @@ export default function BeritaAdminPage() {
     setIsEditMode(true);
     setEditId(item.id);
     setTitle(item.title);
-    setCategory(item.category || "Umum");
+    setCategory(item.modul || item.category || "umum");
     setContent(item.content);
     setCoverImage(item.cover_image);
     setSelectedFile(null);
@@ -83,27 +83,20 @@ export default function BeritaAdminPage() {
     setIsLoading(true);
     try {
       if (isEditMode && editId !== null) {
-        // Logika update (nanti)
         console.log("Mengupdate data dengan ID:", editId);
         showToast("Berita berhasil diperbarui");
       } else {
-        // --- PROSES BUNGKUS DATA KE FORMDATA ---
-const formData = new FormData();
-formData.append("title", title);
-formData.append("content", content);
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("content", content);
+        formData.append("modul", category.toLowerCase());
 
-// Ubah 'category' jadi 'modul' biar cocok sama req.body di backend
-// Kalau di database lu mintanya huruf kecil, lu bisa pakai category.toLowerCase()
-formData.append("modul", category.toLowerCase());
+        if (selectedFile) {
+          formData.append("gambar", selectedFile); 
+        }
 
-if (selectedFile) {
-  // GANTI INI JADI 'gambar' SESUAI PERMINTAAN BACKEND
-  formData.append("gambar", selectedFile); 
-}
-
-// Kirim ke API
-await createNews(formData);
-showToast("Berita berhasil ditambahkan");
+        await createNews(formData);
+        showToast("Berita berhasil ditambahkan");
       }
       
       setIsModalOpen(false);
@@ -120,7 +113,7 @@ showToast("Berita berhasil ditambahkan");
     const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus berita ini?");
     if (confirmDelete) {
       try {
-        await deleteNews(id); // <-- Ini fungsi sakti yang tadi kita tambahkan di newsService
+        await deleteNews(id); 
         showToast("Berita berhasil dihapus");
         refreshData();
       } catch {
@@ -175,8 +168,8 @@ showToast("Berita berhasil ditambahkan");
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-gray-800">{item.title}</td>
                   <td className="px-6 py-4">
-                    <span className="px-3 py-1 bg-[#0a1680]/10 text-[#0a1680] rounded-full text-xs font-bold border border-[#0a1680]/20">
-                      {item.category || "Umum"}
+                    <span className="px-3 py-1 bg-[#0a1680]/10 text-[#0a1680] rounded-full text-xs font-bold border border-[#0a1680]/20 capitalize">
+                      {item.modul || item.category || "umum"}
                     </span>
                   </td>
                   <td className="px-6 py-4 flex items-center justify-center gap-2">
@@ -237,7 +230,7 @@ showToast("Berita berhasil ditambahkan");
                   </div>
                 </div>
 
-                {/* Zona Unggah Foto (Diperkecil dan Dirapikan) */}
+                {/* Zona Unggah Foto */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
                     Foto Berita *

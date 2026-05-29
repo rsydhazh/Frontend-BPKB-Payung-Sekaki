@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiCamera, FiImage, FiCalendar } from "react-icons/fi";
+import { FiCamera, FiImage, FiClock } from "react-icons/fi";
 import { Documentation } from "@/types/documentation";
 import { getDocumentation } from "@/services/documentationService";
 
@@ -27,19 +27,16 @@ export default function GaleriPage() {
   }, []);
 
   // Fungsi bantu format tanggal Indonesia
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "Baru saja";
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
   };
 
   return (
     <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
       
-      {/* HEADER PAGE */}
+      {/* 1. HEADER PAGE */}
       <section className="bg-[#0a1680] text-white pt-14 pb-32 overflow-hidden rounded-b-[4rem] shadow-lg relative">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
                      
@@ -54,47 +51,55 @@ export default function GaleriPage() {
         </div>
       </section>
 
-      {/* KONTEN GALERI */}
-      {/* mt-12 (Margin Top Positif) memastikan card tidak akan pernah menyentuh/nabrak header */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 mt-12 relative z-20">
+      {/* 2. KONTEN GALERI - LAYOUT 100% SAMA DENGAN KARTU BERITA */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-16 mt-12 relative z-20">
         {isLoading ? (
-          <div className="text-center p-12 bg-white rounded-3xl shadow-sm border border-gray-100">
+          /* LOADING STATE */
+          <div className="text-center p-12 bg-white rounded-3xl shadow-sm border border-gray-100 max-w-3xl mx-auto">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#0a1680] mx-auto"></div>
             <p className="mt-4 text-gray-500 text-sm font-medium">Memuat Galeri...</p>
           </div>
         ) : galeriData.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-sm p-16 text-center border border-gray-100 flex flex-col items-center justify-center">
+          /* EMPTY STATE */
+          <div className="bg-white rounded-3xl shadow-sm p-16 text-center border border-gray-100 flex flex-col items-center justify-center max-w-3xl mx-auto">
             <FiImage className="text-gray-200 mb-4" size={40} />
             <h3 className="text-xl font-bold text-gray-800 mb-1">Belum Ada Dokumentasi</h3>
             <p className="text-gray-400 text-sm">Foto kegiatan kependudukan akan segera diunggah.</p>
           </div>
         ) : (
-          /* Grid dengan ukuran card yang lebih kecil (max-w-sm) */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+          /* GRID GAMBAR (Mengikuti Desain Kartu Berita Minimalis) */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {galeriData.map((item) => (
-              <div key={item.id} className="group bg-white rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col w-full max-w-sm">
+              <div 
+                key={item.id} 
+                className="group flex flex-col bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
+              >
                 
-                {/* Image Area - Tinggi dikecilkan jadi h-48 */}
-                <div className="relative h-48 overflow-hidden">
-                  <img 
-                    src={item.image_url} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  />
+                {/* Pembungkus Gambar - Frame melengkung dengan tinggi h-56 */}
+                <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
+                  {item.image_url ? (
+                    <img 
+                      src={item.image_url} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                      <FiImage size={40} />
+                    </div>
+                  )}
                 </div>
 
-                {/* Info Area - Padding diperkecil */}
-                <div className="p-5 flex flex-col gap-2">
-                  <h3 className="text-[#0a1680] font-bold text-lg leading-snug line-clamp-2 min-h-[2.8rem]">
-                    {item.title}
-                  </h3>
-                  
-                  {/* Tanggal Upload */}
-                  <div className="flex items-center gap-2 text-gray-400 text-xs font-medium border-t border-gray-50 pt-3 mt-1">
-                    <FiCalendar className="text-[#f1b94c]" size={14} />
-                    <span>Diunggah: {formatDate(item.created_at || "")}</span>
-                  </div>
+                {/* Informasi Waktu Unggah (Di atas Judul) */}
+                <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
+                  <FiClock size={12} /> Diunggah: {formatDate(item.created_at)}
                 </div>
+
+                {/* Judul Dokumentasi */}
+                <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
+                  {item.title}
+                </h3>
+
               </div>
             ))}
           </div>

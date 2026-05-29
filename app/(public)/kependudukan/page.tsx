@@ -1,32 +1,45 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FiActivity, FiArrowRight, FiClock, FiImage } from "react-icons/fi";
+import { FiActivity, FiArrowRight, FiClock, FiImage, FiX, FiCalendar } from "react-icons/fi";
 import { getNews } from "@/services/newsService"; 
 import { getDocumentation } from "@/services/documentationService"; 
 import { News } from "@/types/news";
 import { Documentation } from "@/types/documentation";
 
-export default async function BerandaKependudukan() {
-  let highlightBerita: News[] = []; 
-  let highlightGaleri: Documentation[] = []; 
+export default function BerandaKependudukan() {
+  const [highlightBerita, setHighlightBerita] = useState<News[]>([]);
+  const [highlightGaleri, setHighlightGaleri] = useState<Documentation[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // State untuk menampung data berita yang sedang aktif di modal popup
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
-  try {
-    // Ambil data Berita & Galeri secara paralel biar load-nya kenceng
-    const [allNews, allGaleri] = await Promise.all([
-      getNews(),
-      getDocumentation()
-    ]);
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [allNews, allGaleri] = await Promise.all([
+          getNews(),
+          getDocumentation()
+        ]);
 
-    // Filter berita khusus modul kependudukan (atau umum juga boleh muncul)
-    highlightBerita = allNews
-      .filter((n) => n.modul === "kependudukan")
-      .slice(0, 3); 
+        // Filter berita khusus modul kependudukan
+        const filteredNews = allNews
+          .filter((n) => n.modul === "kependudukan")
+          .slice(0, 3);
 
-    // Ambil 4 dokumentasi terbaru untuk galeri di beranda
-    highlightGaleri = allGaleri.slice(0, 4);
-    
-  } catch (error) {
-    console.error("Gagal mengambil data dari API:", error);
-  }
+        // Ambil data galeri dan potong menjadi 3 item agar sesuai grid md:grid-cols-3
+        setHighlightBerita(filteredNews);
+        setHighlightGaleri(allGaleri.slice(0, 3));
+      } catch (error) {
+        console.error("Gagal mengambil data dari API:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "Baru saja";
@@ -35,7 +48,7 @@ export default async function BerandaKependudukan() {
   };
 
   return (
-    <main className="bg-[#fcfdff] min-h-screen pb-20 font-sans">
+    <main className="bg-[#fcfdff] min-h-screen pb-20 font-sans relative">
       
       {/* 1. HERO SECTION */}
       <section className="bg-[#0a1680] pt-24 pb-24 px-6 rounded-b-[3.5rem] text-center shadow-2xl">
@@ -78,30 +91,53 @@ export default async function BerandaKependudukan() {
         </div>
       </section>
 
-      {/* 3. GALERI KEGIATAN (Data Real dari Supabase) */}
+      {/* 3. GALERI KEGIATAN - LAYOUT DISAMAKAN PERSIS DENGAN KARTU BERITA */}
       <section className="max-w-5xl mx-auto px-6 mt-28">
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 border-b border-gray-100 pb-6">
           <div>
             <h2 className="text-3xl font-black text-[#1a1a1a]">Galeri Kegiatan</h2>
-            <div className="h-1.5 w-20 bg-[#f1b94c] mt-2 rounded-full"></div>
+            <p className="text-gray-500 mt-2">Potret ragam kegiatan dan pelayanan kependudukan di masyarakat.</p>
           </div>
-          <Link href="/kependudukan/galeri" className="text-[#0a1680] font-bold flex items-center gap-2 hover:underline group">
+          <Link href="/kependudukan/galeri" className="flex items-center gap-2 text-[#0a1680] font-bold hover:text-[#f1b94c] transition-colors group whitespace-nowrap">
             Lihat Semua Galeri <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {highlightGaleri.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {isLoading ? (
+          <div className="text-center py-12 bg-white rounded-3xl shadow-sm border border-gray-100">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a1680] mx-auto"></div>
+          </div>
+        ) : highlightGaleri.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-8">
             {highlightGaleri.map((item) => (
-              <div key={item.id} className="group relative h-48 md:h-64 rounded-2xl overflow-hidden bg-gray-200 shadow-md border-2 border-white">
-                <img 
-                  src={item.image_url} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                  <p className="text-white text-xs font-semibold line-clamp-2">{item.title}</p>
+              <div 
+                key={item.id} 
+                className="group flex flex-col bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
+              >
+                {/* Pembungkus Gambar */}
+                <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
+                  {item.image_url ? (
+                    <img 
+                      src={item.image_url} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                      <FiImage size={40} />
+                    </div>
+                  )}
                 </div>
+
+                {/* Informasi Waktu Unggah */}
+                <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
+                  <FiClock size={12} /> Diunggah: {formatDate(item.created_at)} 
+                </div>
+
+                {/* Judul Dokumentasi */}
+                <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
+                  {item.title}
+                </h3>
               </div>
             ))}
           </div>
@@ -113,7 +149,7 @@ export default async function BerandaKependudukan() {
         )}
       </section>
 
-      {/* 4. BERITA TERBARU (Data Real dari Supabase) */}
+      {/* 4. BERITA TERBARU */}
       <section className="max-w-5xl mx-auto px-6 mt-28">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 border-b border-gray-100 pb-6">
           <div>
@@ -122,50 +158,113 @@ export default async function BerandaKependudukan() {
           </div>
           <Link 
             href="/kependudukan/berita" 
-            className="flex items-center gap-2 text-[#0a1680] font-bold hover:text-[#f1b94c] transition-colors group"
+            className="flex items-center gap-2 text-[#0a1680] font-bold hover:text-[#f1b94c] transition-colors group whitespace-nowrap"
           >
             Semua Berita 
             <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {highlightBerita.length > 0 ? (
-            highlightBerita.map((berita) => (
-              <Link 
-                href={`/kependudukan/berita/${berita.id}`} 
-                key={berita.id} 
-                className="group flex flex-col"
-              >
-                <div className="h-56 rounded-3xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
-                  {berita.cover_image ? (
-                    <img 
-                      src={berita.cover_image} 
-                      alt={berita.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
-                      <FiImage size={40} />
-                    </div>
-                  )}
+        {isLoading ? (
+          <div className="text-center py-12 bg-white rounded-3xl shadow-sm border border-gray-100">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0a1680] mx-auto"></div>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8">
+            {highlightBerita.length > 0 ? (
+              highlightBerita.map((berita) => (
+                <div 
+                  onClick={() => setSelectedNews(berita)} 
+                  key={berita.id} 
+                  className="group flex flex-col cursor-pointer bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
+                    {berita.cover_image ? (
+                      <img 
+                        src={berita.cover_image} 
+                        alt={berita.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                        <FiImage size={40} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
+                    <FiClock size={12} /> {formatDate(berita.created_at)} 
+                  </div>
+
+                  <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
+                    {berita.title}
+                  </h3>
+
+                  <div className="mt-auto pt-4 text-sm font-bold text-[#0a1680] group-hover:text-[#f1b94c] flex items-center gap-1 transition-colors">
+                    Detail
+                    <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-                
-                <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
-                  <FiClock size={12} /> {formatDate(berita.created_at)} 
-                </div>
-                <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2">
-                  {berita.title}
-                </h3>
-              </Link>
-            ))
-          ) : (
-            <div className="col-span-3 text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-100 text-gray-400 font-medium">
-              Belum ada berita kependudukan yang tersedia.
-            </div>
-          )}
-        </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-100 text-gray-400 font-medium">
+                Belum ada berita kependudukan yang tersedia.
+              </div>
+            )}
+          </div>
+        )}
       </section>
+
+      {/* 5. MODAL POPUP DETAIL BERITA */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div 
+            onClick={() => setSelectedNews(null)} 
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+          />
+          
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            
+            <button 
+              onClick={() => setSelectedNews(null)}
+              className="absolute top-4 right-4 z-20 bg-white/80 backdrop-blur-xs p-2 rounded-full text-gray-700 hover:bg-gray-100 hover:text-black shadow-md transition-all"
+            >
+              <FiX size={20} />
+            </button>
+
+            <div className="w-full h-64 sm:h-80 bg-gray-100 relative">
+              {selectedNews.cover_image ? (
+                <img 
+                  src={selectedNews.cover_image} 
+                  alt={selectedNews.title} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#0a1680]/5 flex items-center justify-center">
+                  <FiImage className="text-gray-200" size={56} />
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center gap-2 text-xs text-[#f1b94c] font-black uppercase tracking-wider mb-3">
+                <FiCalendar /> {formatDate(selectedNews.created_at)}
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a] mb-4 leading-tight">
+                {selectedNews.title}
+              </h2>
+
+              <hr className="border-gray-100 my-4" />
+
+              <p className="text-gray-600 text-sm sm:text-base leading-relaxed whitespace-pre-line">
+                {selectedNews.content || "Tidak ada deskripsi detail berita."}
+              </p>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </main>
   );
