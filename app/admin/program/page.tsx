@@ -66,8 +66,8 @@ export default function ProgramAdminPage() {
   };
 
   const handleSave = async (e: React.FormEvent) => {
-    preventDefault();
-    if (!name.trim() || !schedule.trim()) {
+  e.preventDefault(); 
+  if (!name.trim() || !schedule.trim()) {
       setErrorMsg("Nama Program dan Jadwal Pelaksanaan wajib diisi");
       return;
     }
