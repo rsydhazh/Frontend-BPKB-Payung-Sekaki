@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiAlertCircle, FiCheckCircle, FiUploadCloud } from "react-icons/fi";
-import { getNews, createNews, deleteNews } from "@/services/newsService";
+// Tambahkan updateNews ke dalam daftar import service
+import { getNews, createNews, updateNews, deleteNews } from "@/services/newsService";
 import { News } from "@/types/news"; 
 
 export default function BeritaAdminPage() {
@@ -11,6 +12,10 @@ export default function BeritaAdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  
+  // State baru untuk penanganan Modal Konfirmasi Hapus Custom
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("umum");
@@ -82,19 +87,19 @@ export default function BeritaAdminPage() {
 
     setIsLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+      formData.append("modul", category.toLowerCase());
+
+      if (selectedFile) {
+        formData.append("gambar", selectedFile); 
+      }
+
       if (isEditMode && editId !== null) {
-        console.log("Mengupdate data dengan ID:", editId);
+        await updateNews(editId, formData);
         showToast("Berita berhasil diperbarui");
       } else {
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("content", content);
-        formData.append("modul", category.toLowerCase());
-
-        if (selectedFile) {
-          formData.append("gambar", selectedFile); 
-        }
-
         await createNews(formData);
         showToast("Berita berhasil ditambahkan");
       }
@@ -109,16 +114,28 @@ export default function BeritaAdminPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus berita ini?");
-    if (confirmDelete) {
-      try {
-        await deleteNews(id); 
-        showToast("Berita berhasil dihapus");
-        refreshData();
-      } catch {
-        alert("Gagal menghapus berita");
-      }
+  // Membuka modal konfirmasi kustom terlebih dahulu
+  const handleOpenDeleteConfirm = (id: string) => {
+    setDeleteTargetId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Mengeksekusi penghapusan asli setelah menekan tombol "Yakin"
+  const handleExecuteDelete = async () => {
+    if (!deleteTargetId) return;
+    
+    setIsLoading(true);
+    try {
+      await deleteNews(deleteTargetId); 
+      showToast("Berita berhasil dihapus");
+      refreshData();
+    } catch (error) {
+      console.error("Gagal menghapus:", error);
+      alert("Gagal menghapus berita");
+    } finally {
+      setIsLoading(false);
+      setIsDeleteModalOpen(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -176,7 +193,8 @@ export default function BeritaAdminPage() {
                     <button onClick={() => handleOpenEdit(item)} className="p-2 text-gray-400 hover:text-yellow-600 hover:bg-yellow-50 rounded-lg transition-all" title="Edit">
                       <FiEdit2 size={18} />
                     </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus">
+                    {/* Mengalihkan klik langsung ke pembuat modal konfirmasi custom */}
+                    <button onClick={() => handleOpenDeleteConfirm(item.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus">
                       <FiTrash2 size={18} />
                     </button>
                   </td>
@@ -187,7 +205,7 @@ export default function BeritaAdminPage() {
         </div>
       </div>
 
-      {/* MODAL FORM MEWAH */}
+      {/* MODAL FORM */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-4xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-200">
@@ -220,9 +238,9 @@ export default function BeritaAdminPage() {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-2">Kategori Modul</label>
                     <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)} 
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] transition-all appearance-none cursor-pointer">
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)} 
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] transition-all appearance-none cursor-pointer">
                       <option value="umum">Umum</option>
                       <option value="kependudukan">Kependudukan</option>
                       <option value="keluarga">Keluarga</option>
@@ -286,6 +304,46 @@ export default function BeritaAdminPage() {
                 </button>
               </div>
             </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* === MODAL KONFIRMASI HAPUS CUSTOM (YAKIN / TIDAK) === */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center border border-gray-100">
+            
+            {/* Icon Peringatan Estetik */}
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-50 mb-4 text-red-600">
+              <FiAlertCircle size={32} />
+            </div>
+            
+            {/* Konten Teks */}
+            <h3 className="text-xl font-extrabold text-gray-900 mb-2">Hapus Berita?</h3>
+            <p className="text-sm text-gray-400 font-medium px-4 mb-6 leading-relaxed">
+              Apakah Anda benar-benar yakin ingin menghapus berita ini secara permanen dari basis data Balai?
+            </p>
+            
+            {/* Tombol Pilihan Konfirmasi */}
+            <div className="flex justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => { setIsDeleteModalOpen(false); setDeleteTargetId(null); }}
+                className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl font-bold text-sm transition-colors cursor-pointer min-w-[5rem]"
+                disabled={isLoading}
+              >
+                Tidak
+              </button>
+              <button
+                type="button"
+                onClick={handleExecuteDelete}
+                className={`px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-red-600/20 active:scale-95 cursor-pointer min-w-[5rem] ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isLoading}
+              >
+                {isLoading ? "Memproses..." : "Yakin"}
+              </button>
+            </div>
 
           </div>
         </div>

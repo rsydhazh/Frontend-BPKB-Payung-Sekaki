@@ -5,38 +5,40 @@ import { FiPlus, FiEdit2, FiTrash2, FiX, FiAlertCircle, FiCheckCircle, FiLayers,
 import { Program } from "@/types/program";
 
 export default function ProgramAdminPage() {
-  // 1. Memulai dengan state kosong sesuai titah Ndoro
+  // 1. Memulai dengan state kosong
   const [programList, setProgramList] = useState<Program[]>([]);
   
-  const [activeTab, setActiveTab] = useState<"semua" | "kependudukan" | "keluarga">("semua");
+  // Mengubah activeTab agar hanya mengakomodasi "semua" atau "keluarga"
+  const [activeTab, setActiveTab] = useState<"semua" | "keluarga">("semua");
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   
-  // State Input Fields (Sudah menggunakan 'name' & 'description' sesuai types)
+  // State Input Fields (Default dialihkan langsung ke modul "keluarga" dan kategori "kesejahteraan")
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [schedule, setSchedule] = useState("");
-  const [modul, setModul] = useState("kependudukan");
-  const [kategori, setKategori] = useState("reguler");
+  const [modul, setModul] = useState("keluarga");
+  const [kategori, setKategori] = useState("kesejahteraan");
 
   const [errorMsg, setErrorMsg] = useState("");
   const [toastMsg, setToastMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Logika Filter Tab
+  // Logika Filter Tab (Hanya memproses tab yang aktif)
   const filteredPrograms = programList.filter(prog => {
     if (activeTab === "semua") return true;
     return prog.module === activeTab;
   });
 
-  // Logika Dropdown Kategori Otomatis
+  // Logika Dropdown Kategori Otomatis disederhanakan khusus Modul Keluarga
   const handleModulChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedModul = e.target.value;
     setModul(selectedModul);
-    if (selectedModul === "kependudukan") setKategori("reguler");
-    else if (selectedModul === "keluarga") setKategori("kesejahteraan");
+    if (selectedModul === "keluarga") {
+      setKategori("kesejahteraan");
+    }
   };
 
   const handleOpenAdd = () => {
@@ -45,8 +47,8 @@ export default function ProgramAdminPage() {
     setName("");
     setSchedule("");
     setDescription("");
-    setModul("kependudukan");
-    setKategori("reguler");
+    setModul("keluarga");
+    setKategori("kesejahteraan");
     setErrorMsg("");
     setIsModalOpen(true);
   };
@@ -57,21 +59,20 @@ export default function ProgramAdminPage() {
     setName(item.name);
     setSchedule(item.schedule || "");
     setDescription(item.description);
-    setModul(item.module || "kependudukan");
-    setKategori(item.category || "reguler");
+    setModul(item.module || "keluarga");
+    setKategori(item.category || "kesejahteraan");
     setErrorMsg("");
     setIsModalOpen(true);
   };
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+    preventDefault();
     if (!name.trim() || !schedule.trim()) {
       setErrorMsg("Nama Program dan Jadwal Pelaksanaan wajib diisi");
       return;
     }
     setIsLoading(true);
     
-    // Simulasi simpan (nanti Ndoro sambungkan ke programService)
     setTimeout(() => {
       if (isEditMode && editId !== null) {
         setProgramList(prev => prev.map(item => 
@@ -84,7 +85,7 @@ export default function ProgramAdminPage() {
           name, 
           schedule, 
           description, 
-          cover_image: "", // Placeholder
+          cover_image: "", 
           module: modul, 
           category: kategori 
         };
@@ -129,13 +130,10 @@ export default function ProgramAdminPage() {
         </button>
       </div>
 
-      {/* Tabs Filter */}
+      {/* Tabs Filter - Tampilan Berdasarkan image_3fcb44.png Setelah Dihapus Kependudukan */}
       <div className="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-2 w-max">
         <button onClick={() => setActiveTab("semua")} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === "semua" ? "bg-[#0a1680] text-white shadow-md" : "text-gray-500 hover:bg-gray-50"}`}>
           Semua Program
-        </button>
-        <button onClick={() => setActiveTab("kependudukan")} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === "kependudukan" ? "bg-blue-100 text-[#0a1680] shadow-md border border-blue-200" : "text-gray-500 hover:bg-gray-50"}`}>
-          Modul Kependudukan
         </button>
         <button onClick={() => setActiveTab("keluarga")} className={`px-5 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === "keluarga" ? "bg-yellow-100 text-yellow-700 shadow-md border border-yellow-200" : "text-gray-500 hover:bg-gray-50"}`}>
           Modul Keluarga
@@ -178,11 +176,7 @@ export default function ProgramAdminPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col items-start gap-1">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
-                          item.module === "kependudukan" 
-                            ? "bg-blue-50 text-[#0a1680] border-blue-100" 
-                            : "bg-yellow-50 text-yellow-700 border-yellow-100"
-                        }`}>
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border bg-yellow-50 text-yellow-700 border-yellow-100">
                           {item.module}
                         </span>
                         <span className="text-[10px] font-medium text-gray-400 pl-1 uppercase tracking-tighter">
@@ -225,29 +219,19 @@ export default function ProgramAdminPage() {
                 </div>
               )}
 
-              {/* Selector Modul & Kategori */}
+              {/* Selector Modul & Kategori (Hanya Menampilkan Pilihan Modul Keluarga) */}
               <div className="grid md:grid-cols-2 gap-6 p-6 bg-gray-50 rounded-[1.5rem] border border-gray-100">
                 <div>
                   <label className="block text-sm font-bold text-[#0a1680] mb-2 uppercase tracking-wide text-[11px]">Penempatan Modul</label>
                   <select value={modul} onChange={handleModulChange} className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 font-bold text-gray-700 cursor-pointer">
-                    <option value="kependudukan">Kependudukan</option>
                     <option value="keluarga">Keluarga</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-[#0a1680] mb-2 uppercase tracking-wide text-[11px]">Kategori Tampilan</label>
                   <select value={kategori} onChange={(e) => setKategori(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 text-gray-700 cursor-pointer">
-                    {modul === "kependudukan" ? (
-                      <>
-                        <option value="reguler">Program Reguler</option>
-                        <option value="quick_win">Quick Wins</option>
-                      </>
-                    ) : (
-                      <>
-                        <option value="kesejahteraan">Kesejahteraan Keluarga</option>
-                        <option value="kb">Keluarga Berencana (KB)</option>
-                      </>
-                    )}
+                    <option value="kesejahteraan">Kesejahteraan Keluarga</option>
+                    <option value="kb">Keluarga Berencana (KB)</option>
                   </select>
                 </div>
               </div>
@@ -256,11 +240,11 @@ export default function ProgramAdminPage() {
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Nama Program *</label>
-                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 transition-all text-sm" placeholder="Contoh: Posyandu Lansia" />
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 transition-all text-sm" placeholder="Contoh: Bina Keluarga Balita (BKB)" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">Jadwal Pelaksanaan *</label>
-                  <input type="text" value={schedule} onChange={(e) => setSchedule(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 transition-all text-sm" placeholder="Contoh: Setiap Selasa, 08:00 WIB" />
+                  <input type="text" value={schedule} onChange={(e) => setSchedule(e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 transition-all text-sm" placeholder="Contoh: Setiap Sabtu, 09:00 WIB" />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-sm font-bold text-gray-700 mb-2">Deskripsi Singkat</label>
