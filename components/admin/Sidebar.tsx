@@ -2,14 +2,27 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FiHome, FiFileText, FiImage, FiSettings, FiLogOut, FiBox, FiUsers } from "react-icons/fi";
+import { 
+  FiHome, 
+  FiFileText, 
+  FiImage, 
+  FiSettings, 
+  FiLogOut, 
+  FiBox, 
+  FiUsers, 
+  FiActivity // <-- 1. IMPORT ICON BARU DI SINI
+} from "react-icons/fi";
 
 const menuItems = [
   { name: "Dashboard", icon: FiHome, path: "/admin" },
   { name: "Berita", icon: FiFileText, path: "/admin/berita" },
   { name: "Program", icon: FiBox, path: "/admin/program" },
-  { name: "Data Pendaftar", icon: FiUsers, path: "/admin/pendaftar" }, // <-- Menu Baru!
-  { name: "Galeri", icon: FiImage, path: "/admin/galeri" }, // <-- Berubah jadi Galeri (pastikan nama folder admin-nya juga diubah ya Ndoro)
+  { name: "Data Pendaftar", icon: FiUsers, path: "/admin/pendaftar" },
+  
+  // 🔥 2. MENU BARU UNTUK CEK KESEHATAN WARGA
+  { name: "Cek Kesehatan", icon: FiActivity, path: "/admin/cek-kesehatan" },
+  
+  { name: "Galeri", icon: FiImage, path: "/admin/galeri" },
   { name: "Pengaturan", icon: FiSettings, path: "/admin/pengaturan" },
 ];
 

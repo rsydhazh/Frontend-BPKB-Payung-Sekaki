@@ -67,27 +67,39 @@ export default function BerandaKependudukan() {
 
       {/* 2. FEATURED SERVICE (Cek Kesehatan) */}
       <section className="max-w-5xl mx-auto px-6 -mt-12">
-        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(10,22,128,0.12)] border border-blue-50 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(10,22,128,0.12)] border border-blue-50 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-3 bg-red-50 text-red-500 rounded-xl">
                 <FiActivity size={24} />
               </div>
-              <span className="text-[#0a1680] font-bold tracking-wide">LAYANAN UNGGULAN</span>
+              <span className="text-[#0a1680] font-bold tracking-wide">LAYANAN KESEHATAN</span>
             </div>
-            <h2 className="text-3xl font-extrabold text-[#1a1a1a] mb-4">Skrining Kesehatan Mandiri</h2>
-            <p className="text-gray-500 text-lg max-w-lg mb-0">
-              Cek tekanan darah dan gula darah Anda secara mandiri. Dapatkan hasil deteksi dini dan rekomendasi gizi instan.
+            <h2 className="text-3xl font-extrabold text-[#1a1a1a] mb-4">Layanan Cek Kesehatan Berkala</h2>
+            <p className="text-gray-500 text-md max-w-xl mb-0 leading-relaxed">
+              Lakukan skrining mandiri secara instan untuk deteksi dini, atau masuk ke portal akun Anda untuk memantau grafik riwayat pemeriksaan medis terdahulu.
             </p>
           </div>
           
-          <Link 
-            href="/kependudukan/cek-kesehatan" 
-            className="relative z-10 shrink-0 flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-lg px-10 py-5 rounded-2xl hover:bg-[#f1b94c] hover:text-[#0a1680] transition-all duration-300 group shadow-xl"
-          >
-            Mulai Skrining
-            <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
-          </Link>
+          
+          <div className="relative z-10 shrink-0 flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            
+            <Link 
+              href="/kependudukan/cek-kesehatan" 
+              className="flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-sm px-6 py-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 shadow-lg whitespace-nowrap"
+            >
+              Mulai Skrining
+              <FiArrowRight />
+            </Link>
+
+            {/* Pilihan 2: Portal Lihat History Warga */}
+            <Link 
+              href="/warga/login-warga" 
+              className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm">
+                  Lihat Riwayat Pengecekan
+            </Link>
+          </div>
+
         </div>
       </section>
 
