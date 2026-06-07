@@ -1,7 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { FiFileText, FiImage, FiBox, FiActivity, FiUsers } from "react-icons/fi";
-
 interface ActivityItem {
   id: number;
   aksi: string;
