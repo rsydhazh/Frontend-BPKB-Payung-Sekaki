@@ -73,12 +73,14 @@ export default function HistoryWargaPage() {
           setHistory(historyKesehatan as any);
           
           // Ambil informasi nama asli dan NIK dari rekam medis pertama untuk dipajang di banner
-          const infoWarga = historyKesehatan[0].warga;
-          if (infoWarga) {
+          const infoWarga = historyKesehatan[0]?.warga;
+            if (infoWarga) {
+           // Gunakan Type Assertion (as any) untuk memaksa TypeScript membaca propertinya
+          const dataWarga = infoWarga as any;
             setProfilWarga({
-              nama: infoWarga.nama_warga,
-              nik: infoWarga.nik,
-            });
+              nama: dataWarga.nama_warga || "Warga",
+              nik: dataWarga.nik || "-",
+               });
           }
         }
       } catch (err) {
