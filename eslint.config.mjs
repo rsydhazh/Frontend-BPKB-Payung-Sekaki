@@ -10,11 +10,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Blokir total pengecekan file kodingan saat di cloud
-    "app/**",
-    "components/**",
-    "**/*.ts",
-    "**/*.tsx"
   ]),
 ]);
 
