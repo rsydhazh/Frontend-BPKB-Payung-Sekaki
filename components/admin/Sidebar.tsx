@@ -10,7 +10,7 @@ import {
   FiLogOut, 
   FiBox, 
   FiUsers, 
-  FiActivity // <-- 1. IMPORT ICON BARU DI SINI
+  FiHeart 
 } from "react-icons/fi";
 
 const menuItems = [
@@ -19,8 +19,8 @@ const menuItems = [
   { name: "Program", icon: FiBox, path: "/admin/program" },
   { name: "Data Pendaftar", icon: FiUsers, path: "/admin/pendaftar" },
   
-  // 🔥 2. MENU BARU UNTUK CEK KESEHATAN WARGA
-  { name: "Cek Kesehatan", icon: FiActivity, path: "/admin/cek-kesehatan" },
+  // 🔥 MENU CEK KESEHATAN WARGA AMAN
+  { name: "Cek Kesehatan", icon: FiHeart, path: "/admin/cek-kesehatan" },
   
   { name: "Galeri", icon: FiImage, path: "/admin/galeri" },
   { name: "Pengaturan", icon: FiSettings, path: "/admin/pengaturan" },
@@ -80,7 +80,7 @@ export default function Sidebar() {
           onClick={handleLogout}
           className="flex items-center gap-4 w-full px-4 py-3.5 rounded-xl font-medium text-white/70 hover:bg-red-500/20 hover:text-red-400 transition-all duration-300 group"
         >
-          <FiLogOut className="text-xl shrink-0 group-hover:scale-110 transition-transform" />
+          <pre><FiLogOut className="text-xl shrink-0 group-hover:scale-110 transition-transform" /></pre>
           Keluar
         </button>
       </div>

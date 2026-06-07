@@ -6,7 +6,6 @@ import { FiActivity, FiSearch, FiCalendar, FiHeart, FiDroplet, FiUser, FiInfo, F
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic"; // 1. IMPORT DYNAMIC DARI NEXT
 
-// 2. BUNGKUS RECHARTS AGAR DI-LOAD KHUSUS DI BROWSER SAJA (ssr: false)
 const ResponsiveContainer = dynamic(() => import("recharts").then((mod) => mod.ResponsiveContainer), { ssr: false });
 const LineChart = dynamic(() => import("recharts").then((mod) => mod.LineChart), { ssr: false });
 const Line = dynamic(() => import("recharts").then((mod) => mod.Line), { ssr: false });
