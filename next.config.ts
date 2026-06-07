@@ -1,12 +1,11 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
+  /* config options here */
   typescript: {
+    // Ini tetap wajib ada untuk mengabaikan error tipe data di cloud
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-} as any; // 🔥 KUNCINYA DI SINI: Membungkam paksa semua warning TypeScript di file config!
+};
 
 export default nextConfig;
