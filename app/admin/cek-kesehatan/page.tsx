@@ -4,21 +4,20 @@ import { useEffect, useState } from "react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { FiActivity, FiSearch, FiCalendar, FiHeart, FiDroplet, FiUser, FiInfo, FiTrendingUp } from "react-icons/fi";
 import { Loader2 } from "lucide-react";
-// Import Recharts untuk visualisasi data klinis
-import { 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend 
-} from "recharts";
+import dynamic from "next/dynamic"; // 1. IMPORT DYNAMIC DARI NEXT
 
-// Interface data join dari database
+// 2. BUNGKUS RECHARTS AGAR DI-LOAD KHUSUS DI BROWSER SAJA (ssr: false)
+const ResponsiveContainer = dynamic(() => import("recharts").then((mod) => mod.ResponsiveContainer), { ssr: false });
+const LineChart = dynamic(() => import("recharts").then((mod) => mod.LineChart), { ssr: false });
+const Line = dynamic(() => import("recharts").then((mod) => mod.Line), { ssr: false });
+const BarChart = dynamic(() => import("recharts").then((mod) => mod.BarChart), { ssr: false });
+const Bar = dynamic(() => import("recharts").then((mod) => mod.Bar), { ssr: false });
+const XAxis = dynamic(() => import("recharts").then((mod) => mod.XAxis), { ssr: false });
+const YAxis = dynamic(() => import("recharts").then((mod) => mod.YAxis), { ssr: false });
+const CartesianGrid = dynamic(() => import("recharts").then((mod) => mod.CartesianGrid), { ssr: false });
+const Tooltip = dynamic(() => import("recharts").then((mod) => mod.Tooltip), { ssr: false });
+const Legend = dynamic(() => import("recharts").then((mod) => mod.Legend), { ssr: false });
+
 interface PengecekanKesehatanAdmin {
   id: string;
   tensi: string;
@@ -40,7 +39,6 @@ export default function AdminCekKesehatanPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // State untuk data grafik
   const [dataTrenBulanan, setDataTrenBulanan] = useState<any[]>([]);
   const [dataStatusKategori, setDataStatusKategori] = useState<any[]>([]);
 
@@ -49,7 +47,6 @@ export default function AdminCekKesehatanPage() {
       try {
         setIsLoading(true);
         
-        // Mengambil semua data pemeriksaan + JOIN profil warga
         const { data, error } = await supabase
           .from("pengecekan_kesehatan")
           .select(`
@@ -72,7 +69,6 @@ export default function AdminCekKesehatanPage() {
           setDataMedis(data as any);
           setFilteredData(data as any);
 
-          // === 📊 1. PROSES DATA UNTUK GRAFIK TREN BULANAN ===
           const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
           const bulananGroup: { [key: string]: { totalSistolik: number; totalGula: number; count: number } } = {};
 
@@ -80,8 +76,8 @@ export default function AdminCekKesehatanPage() {
             const date = new Date(item.created_at);
             const bulanKey = `${namaBulan[date.getMonth()]} ${date.getFullYear()}`;
             
-            // Ambil angka sistolik dari tensi (misal "210/100" diambil 210-nya)
-            const sistolik = parseInt(item.tensi.split("/")[0]) || 120;
+            const listSistolik = item.tensi ? item.tensi.split("/") : ["120"];
+            const sistolik = parseInt(listSistolik[0]) || 120;
             const gula = parseInt(item.gula_darah) || 100;
 
             if (!bulananGroup[bulanKey]) {
@@ -97,9 +93,8 @@ export default function AdminCekKesehatanPage() {
             "Rata Tensi (Sistolik)": Math.round(bulananGroup[key].totalSistolik / bulananGroup[key].count),
             "Rata Gula Darah": Math.round(bulananGroup[key].totalGula / bulananGroup[key].count),
           }));
-          setDataTrenBulanan(trenFormat.reverse()); // Urutkan kronologis
+          setDataTrenBulanan(trenFormat.reverse());
 
-          // === 📊 2. PROSES DATA UNTUK GRAFIK BATANG KATEGORI ===
           let normalCount = 0;
           let hipertensiCount = 0;
           let gulaTinggiCount = 0;
@@ -127,7 +122,6 @@ export default function AdminCekKesehatanPage() {
     fetchAllDataKesehatan();
   }, [supabase]);
 
-  // Fungsi Filter/Pencarian Real-time
   useEffect(() => {
     const query = searchQuery.toLowerCase().trim();
     if (query === "") {
@@ -156,7 +150,6 @@ export default function AdminCekKesehatanPage() {
 
   return (
     <div className="p-2 space-y-8 font-sans">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
         <div>
           <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
@@ -173,9 +166,7 @@ export default function AdminCekKesehatanPage() {
         </div>
       </div>
 
-      {/* 📊 SEKSI GRAFIK UTAMA (DI ATAS TABEL) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Grafik Tren Garis */}
         <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
           <div>
             <h4 className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
@@ -198,7 +189,6 @@ export default function AdminCekKesehatanPage() {
           </div>
         </div>
 
-        {/* Grafik Batang Kategori */}
         <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-4">
           <div>
             <h4 className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
@@ -222,7 +212,6 @@ export default function AdminCekKesehatanPage() {
 
       <hr className="border-gray-100" />
 
-      {/* 🔍 SEKSI TABEL DATA & PENCARIAN (DI BAWAH GRAFIK) */}
       <div className="space-y-4">
         <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-3">
           <FiSearch className="text-gray-400" size={20} />

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FiFileText, FiImage, FiBox, FiActivity, FiUsers } from "react-icons/fi";
+
 interface ActivityItem {
   id: number;
   aksi: string;
@@ -59,7 +60,7 @@ export default function DashboardAdmin() {
             <FiBox size={24} />
           </div>
           <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Program Aktif</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Program Hack</p>
             <h3 className="text-3xl font-black text-[#1a1a1a]">{stats.programAktif}</h3>
           </div>
         </div>
@@ -107,8 +108,15 @@ export default function DashboardAdmin() {
                 </tr>
               ) : (
                 recentActivities.map((activity) => (
-                  <tr key={activity.id}>
-                    {/* Nanti diisi saat data ditarik dari API */}
+                  <tr key={activity.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="py-4 font-medium text-gray-900">{activity.aksi}</td>
+                    <td className="py-4 text-gray-600">{activity.judul}</td>
+                    <td className="py-4 text-gray-500">{activity.waktu}</td>
+                    <td className="py-4">
+                      <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-50 text-green-700 border border-green-100">
+                        {activity.status}
+                      </span>
+                    </td>
                   </tr>
                 ))
               )}
