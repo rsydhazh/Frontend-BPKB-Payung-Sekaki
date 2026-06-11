@@ -7,10 +7,10 @@ import { RegistrationPayload } from "@/types/registration";
 
 export default function PendaftaranKeluargaPage() {
   const [formData, setFormData] = useState<RegistrationPayload>({
-    program_id: "KELUARGA-KB-01", 
+    program_id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", 
     full_name: "",
     nik: "",
-    phone_number: "", // Disisipkan agar tim balai bisa menghubungi
+    phone_number: "",
     address: "",
     tanggal_lahir: "",
     faskes: "",
@@ -25,7 +25,7 @@ export default function PendaftaranKeluargaPage() {
 
   const handleReset = () => {
     setFormData({
-      program_id: "KELUARGA-KB-01", 
+      program_id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", 
       full_name: "",
       nik: "",
       phone_number: "",
@@ -46,9 +46,17 @@ export default function PendaftaranKeluargaPage() {
     try {
       await createRegistration(formData as RegistrationPayload);
       setSubmitStatus({ type: "success", message: "Pendaftaran berhasil! Tim penyuluh KB akan segera memproses data Anda." });
-      handleReset(); // Kosongkan form setelah sukses
-    } catch {
-      setSubmitStatus({ type: "error", message: "Terjadi kesalahan. Pastikan koneksi stabil dan coba lagi." });
+      handleReset();
+    } catch (error) {
+      console.error("GAGAL DAFTAR KB:", error);
+      
+      // Ambil pesan error aslinya jika ada
+      const pesanError = error instanceof Error ? error.message : "Terjadi kesalahan.";
+      
+      setSubmitStatus({ 
+        type: "error", 
+        message: `${pesanError} Coba periksa console (Inspect Element > Console) untuk detailnya.` 
+      });
     } finally {
       setIsLoading(false);
       setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
