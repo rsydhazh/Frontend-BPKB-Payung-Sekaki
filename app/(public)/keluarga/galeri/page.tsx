@@ -14,7 +14,6 @@ export default function GaleriKeluargaPage() {
       try {
         const data = await getDocumentation();
         
-        // Cek dan filter secara aman tanpa menggunakan 'any' agar lolos ESLint
         const filtered = (data as unknown as Array<{ id: number; title: string; image_url: string; created_at?: string; modul?: string }>).filter(
           (item) => item.modul?.toLowerCase() === "keluarga"
         );
