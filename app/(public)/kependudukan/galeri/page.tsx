@@ -13,9 +13,11 @@ export default function GaleriPage() {
     const loadGaleri = async () => {
       try {
         const data = await getDocumentation();
-        const filtered = data.filter((item: any) => 
+        
+        const filtered = data.filter((item: Documentation & { modul?: string }) => 
           item.modul?.toLowerCase() === "kependudukan"
         );
+        
         setGaleriData(filtered);
       } catch (error) {
         console.error("Gagal mengambil galeri:", error);

@@ -1,120 +1,275 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiHeart, FiShield, FiCheckCircle, FiStar, FiRefreshCw } from "react-icons/fi";
-import { getPrograms } from "@/services/programService";
-import { Program } from "@/types/program";
+import Link from "next/link";
+import { FiHeart, FiArrowRight, FiClock, FiImage, FiX, FiCalendar, FiRefreshCw } from "react-icons/fi";
+import { getNews } from "@/services/newsService"; 
+import { getDocumentation } from "@/services/documentationService"; 
+import { News } from "@/types/news";
+import { Documentation } from "@/types/documentation";
 
-export default function KeluargaPage() {
-  const [programs, setPrograms] = useState<Program[]>([]);
+export default function BerandaKeluargaPage() {
+  const [highlightBerita, setHighlightBerita] = useState<News[]>([]);
+  const [highlightGaleri, setHighlightGaleri] = useState<Documentation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // State untuk popup modal detail berita
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
   useEffect(() => {
-    const fetchPrograms = async () => {
+    async function loadData() {
       try {
-        const data = await getPrograms();
-        const keluargaPrograms = data.filter((p) => p.module === "keluarga");
-        setPrograms(keluargaPrograms);
+        const [allNews, allGaleri] = await Promise.all([
+          getNews(),
+          getDocumentation()
+        ]);
+
+        // 1. Filter Berita Khusus Modul Keluarga
+        const filteredNews = allNews
+          .filter((n) => n.modul === "keluarga" || n.category?.toLowerCase() === "keluarga")
+          .slice(0, 3);
+
+        // 2. Filter Galeri Khusus Modul Keluarga
+        setHighlightBerita(filteredNews);
+        setHighlightGaleri(allGaleri.slice(0, 3));
+        
       } catch (error) {
-        console.error("Gagal menarik data program:", error);
+        console.error("Gagal mengambil data dari API Modul Keluarga:", error);
       } finally {
         setIsLoading(false);
       }
-    };
-    fetchPrograms();
+    }
+    loadData();
   }, []);
 
-  // Filter ke dalam 2 kotak
-  const kesejahteraanPrograms = programs.filter(p => p.category === "kesejahteraan");
-  const kbPrograms = programs.filter(p => p.category === "kb");
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "Baru saja";
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  };
 
   return (
-    <main className="bg-[#fcfdff] min-h-screen pb-24 font-sans">
+    <main className="bg-[#fcfdff] min-h-screen pb-20 font-sans relative">
       
-      {/* 1. HERO SECTION */}
-     <section className="relative w-full pt-14 pb-28 overflow-hidden rounded-b-[4rem] shadow-[0_10px_30px_rgba(10,22,128,0.15)]">
-        <div className="absolute inset-0 bg-linear-to-br from-[#050b40] via-[#0a1680] to-[#1425b0]"></div>
-        <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(45deg,transparent_25%,#ffffff_50%,transparent_75%,transparent_100%)] bg-size-[20px_20px]"></div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
-          <span className="inline-block py-1 px-4 rounded-full bg-white/10 text-[#fbedb0] font-bold text-xs mb-6 border border-white/10 tracking-widest uppercase backdrop-blur-sm">
-            Selamat Datang di
+      {/* 1. HERO SECTION MODUL KELUARGA */}
+      <section className="bg-[#0a1680] pt-24 pb-24 px-6 rounded-b-[3.5rem] text-center shadow-2xl">
+        <div className="max-w-4xl mx-auto">
+          <span className="text-[#f1b94c] text-sm font-bold tracking-widest uppercase mb-4 block">
+            Selamat Datang Di
           </span>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 tracking-tight drop-shadow-md">
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
             Modul <span className="text-[#f1b94c]">Keluarga</span>
           </h1>
-          <p className="text-[#93b2f8] text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
-            Pusat informasi dan program pemberdayaan kesejahteraan, ketahanan, serta ekonomi keluarga di wilayah Payung Sekaki.
+          <p className="text-blue-100/80 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+            Pusat informasi strategis dan program pemberdayaan kesejahteraan, ketahanan, serta pelayanan keluarga berencana di wilayah Payung Sekaki.
           </p>
         </div>
       </section>
 
-      {/* 2. PROGRAM KELUARGA (DINAMIS) */}
-      <section className="max-w-7xl mx-auto px-8 lg:px-16 -mt-10 relative z-20">
-        
+      {/* 2. FEATURED SERVICE (Disulap Jadi Pendaftaran KB) */}
+      <section className="max-w-5xl mx-auto px-6 -mt-12">
+        <div className="bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(10,22,128,0.12)] border border-blue-50 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-pink-50 text-pink-500 rounded-xl">
+                <FiHeart size={24} />
+              </div>
+              <span className="text-[#0a1680] font-bold tracking-wide">PELAYANAN KB</span>
+            </div>
+            <h2 className="text-3xl font-extrabold text-[#1a1a1a] mb-4">Pendaftaran Pelayanan KB Online</h2>
+            <p className="text-gray-500 text-md max-w-xl mb-0 leading-relaxed">
+              Daftarkan diri atau anggota keluarga Anda secara mandiri untuk mendapatkan akses pelayanan Keluarga Berencana (KB) terbaik di Balai Penyuluh Payung Sekaki.
+            </p>
+          </div>
+          
+          <div className="relative z-10 shrink-0 flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            <Link 
+              href="/keluarga/pendaftaran-kb" 
+              className="flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-sm px-6 py-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 shadow-lg whitespace-nowrap"
+            >
+              Mulai Pendaftaran
+              <FiArrowRight />
+            </Link>
+
+            <Link 
+              href="/warga/login-warga" 
+              className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm"
+            >
+              Lihat Status Pendaftaran
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. CUPLIKAN GALERI KEGIATAN KELUARGA */}
+      <section className="max-w-5xl mx-auto px-6 mt-28">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 border-b border-gray-100 pb-6">
+          <div>
+            <h2 className="text-3xl font-black text-[#1a1a1a]">Galeri Kegiatan Keluarga</h2>
+            <p className="text-gray-500 mt-2">Potret dokumentasi program ketahanan keluarga dan Bina Keluarga di masyarakat.</p>
+          </div>
+          <Link href="/keluarga/galeri" className="flex items-center gap-2 text-[#0a1680] font-bold hover:text-[#f1b94c] transition-colors group whitespace-nowrap">
+            Lihat Semua Galeri <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
         {isLoading ? (
-          <div className="bg-white p-12 rounded-4xl shadow-lg text-center flex flex-col items-center justify-center">
-             <FiRefreshCw className="text-[#0a1680] text-4xl animate-spin mb-4" />
-             <p className="text-gray-500 font-medium">Sedang menyinkronkan program dari server...</p>
+          <div className="text-center py-12 bg-white rounded-3xl shadow-sm border border-gray-100">
+            <FiRefreshCw className="animate-spin text-[#0a1680] mx-auto text-2xl" />
+          </div>
+        ) : highlightGaleri.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-8">
+            {highlightGaleri.map((item) => (
+              <div 
+                key={item.id} 
+                className="group flex flex-col bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
+                  {item.image_url ? (
+                    <img 
+                      src={item.image_url} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                      <FiImage size={40} />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
+                  <FiClock size={12} /> Diunggah: {formatDate(item.created_at)} 
+                </div>
+
+                <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
+                  {item.title}
+                </h3>
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            
-            {/* KOTAK 1: KESEJAHTERAAN KELUARGA */}
-            <div className="bg-white p-10 rounded-4xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-gray-100 hover:-translate-y-2 transition-transform duration-300">
-              <div className="w-16 h-16 bg-[#0a1680]/10 text-[#0a1680] rounded-2xl flex items-center justify-center mb-6">
-                <FiHeart size={32} />
-              </div>
-              <h2 className="text-2xl font-extrabold text-[#1a1a1a] mb-4">Kesejahteraan Keluarga</h2>
-              <p className="text-gray-500 leading-relaxed mb-6 pb-6 border-b border-gray-100">
-                Berfokus pada kelompok kegiatan siklus hidup manusia dari balita hingga lansia, serta pemberdayaan ekonomi keluarga.
-              </p>
-              
-              <div className="space-y-5">
-                {kesejahteraanPrograms.length > 0 ? kesejahteraanPrograms.map((prog) => (
-                  <div key={prog.id} className="flex items-start gap-3">
-                    <FiCheckCircle className="text-[#0a1680] mt-1 shrink-0" size={20} />
-                    <div>
-                      <h3 className="font-bold text-[#1a1a1a]">{prog.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{prog.description}</p>
-                      {prog.schedule && <p className="text-xs font-bold text-[#f1b94c] mt-2">🕒 {prog.schedule}</p>}
-                    </div>
-                  </div>
-                )) : (
-                  <p className="text-sm text-gray-400 italic">Belum ada program kesejahteraan yang ditambahkan.</p>
-                )}
-              </div>
-            </div>
-
-            {/* KOTAK 2: KELUARGA BERENCANA */}
-            <div className="bg-white p-10 rounded-4xl shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-gray-100 hover:-translate-y-2 transition-transform duration-300">
-              <div className="w-16 h-16 bg-[#f1b94c]/20 text-[#d99c2b] rounded-2xl flex items-center justify-center mb-6">
-                <FiShield size={32} />
-              </div>
-              <h2 className="text-2xl font-extrabold text-[#1a1a1a] mb-4">Keluarga Berencana</h2>
-              <p className="text-gray-500 leading-relaxed mb-6 pb-6 border-b border-gray-100">
-                Fokus pada pelayanan akses kontrasepsi dan edukasi kesehatan reproduksi demi terwujudnya keluarga yang sehat dan terencana.
-              </p>
-
-              <div className="space-y-5">
-                {kbPrograms.length > 0 ? kbPrograms.map((prog) => (
-                  <div key={prog.id} className="flex items-start gap-3">
-                    <FiStar className="text-[#f1b94c] mt-1 shrink-0" size={20} />
-                    <div>
-                      <h3 className="font-bold text-[#1a1a1a]">{prog.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1">{prog.description}</p>
-                      {prog.schedule && <p className="text-xs font-bold text-[#0a1680] mt-2">🕒 {prog.schedule}</p>}
-                    </div>
-                  </div>
-                )) : (
-                  <p className="text-sm text-gray-400 italic">Belum ada program KB yang ditambahkan.</p>
-                )}
-              </div>
-            </div>
-
+          <div className="text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-100 flex flex-col items-center">
+            <FiImage size={48} className="text-gray-200 mb-4" />
+            <p className="text-gray-400 font-medium">Belum ada dokumentasi kegiatan Modul Keluarga.</p>
           </div>
         )}
       </section>
+
+      {/* 4. CUPLIKAN BERITA TERBARU KELUARGA */}
+      <section className="max-w-5xl mx-auto px-6 mt-28">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 border-b border-gray-100 pb-6">
+          <div>
+            <h2 className="text-3xl font-black text-[#1a1a1a]">Berita Terbaru</h2>
+            <p className="text-gray-500 mt-2">Informasi terkini seputar ketahanan dan perkembangan Keluarga Berencana di Payung Sekaki.</p>
+          </div>
+          <Link 
+            href="/keluarga/berita" 
+            className="flex items-center gap-2 text-[#0a1680] font-bold hover:text-[#f1b94c] transition-colors group whitespace-nowrap"
+          >
+            Semua Berita 
+            <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-12 bg-white rounded-3xl shadow-sm border border-gray-100">
+            <FiRefreshCw className="animate-spin text-[#0a1680] mx-auto text-2xl" />
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-3 gap-8">
+            {highlightBerita.length > 0 ? (
+              highlightBerita.map((berita) => (
+                <div 
+                  onClick={() => setSelectedNews(berita)} 
+                  key={berita.id} 
+                  className="group flex flex-col cursor-pointer bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
+                    {berita.cover_image ? (
+                      <img 
+                        src={berita.cover_image} 
+                        alt={berita.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                        <FiImage size={40} />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
+                    <FiClock size={12} /> {formatDate(berita.created_at)} 
+                  </div>
+
+                  <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
+                    {berita.title}
+                  </h3>
+
+                  <div className="mt-auto pt-4 text-sm font-bold text-[#0a1680] group-hover:text-[#f1b94c] flex items-center gap-1 transition-colors">
+                    Detail
+                    <FiArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-100 text-gray-400 font-medium">
+                Belum ada berita mengenai program Keluarga yang tersedia.
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* 5. MODAL POPUP DETAIL BERITA */}
+      {selectedNews && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div 
+            onClick={() => setSelectedNews(null)} 
+            className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+          />
+          
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <button 
+              onClick={() => setSelectedNews(null)}
+              className="absolute top-4 right-4 z-20 bg-white/80 backdrop-blur-xs p-2 rounded-full text-gray-700 hover:bg-gray-100 hover:text-black shadow-md transition-all"
+            >
+              <FiX size={20} />
+            </button>
+
+            <div className="w-full h-64 sm:h-80 bg-gray-100 relative">
+              {selectedNews.cover_image ? (
+                <img 
+                  src={selectedNews.cover_image} 
+                  alt={selectedNews.title} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#0a1680]/5 flex items-center justify-center">
+                  <FiImage className="text-gray-200" size={56} />
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center gap-2 text-xs text-[#f1b94c] font-black uppercase tracking-wider mb-3">
+                <FiCalendar /> {formatDate(selectedNews.created_at)}
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a] mb-4 leading-tight">
+                {selectedNews.title}
+              </h2>
+
+              <hr className="border-gray-100 my-4" />
+
+              <p className="text-gray-600 text-sm sm:text-base leading-relaxed whitespace-pre-line text-justify">
+                {selectedNews.content || "Tidak ada deskripsi detail berita."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
     </main>
   );
