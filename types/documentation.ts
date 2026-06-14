@@ -4,6 +4,7 @@ export interface Documentation {
   description: string;
   image_url: string;
   created_at?: string;
+  modul?: string;
 }
 
 export interface DocumentationPayload {

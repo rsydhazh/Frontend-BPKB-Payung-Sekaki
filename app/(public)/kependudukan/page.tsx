@@ -24,14 +24,18 @@ export default function BerandaKependudukan() {
           getDocumentation()
         ]);
 
-        // Filter berita khusus modul kependudukan
+        // 1. Filter berita khusus modul kependudukan
         const filteredNews = allNews
           .filter((n) => n.modul === "kependudukan")
           .slice(0, 3);
 
-        // Ambil data galeri dan potong menjadi 3 item agar sesuai grid md:grid-cols-3
+        // 2. PERBAIKAN UTAMA: Filter galeri khusus modul kependudukan sebelum dipotong (.slice)
+        const filteredGaleri = allGaleri
+          .filter((g) => (g as { modul?: string }).modul === "kependudukan")
+          .slice(0, 3);
+
         setHighlightBerita(filteredNews);
-        setHighlightGaleri(allGaleri.slice(0, 3));
+        setHighlightGaleri(filteredGaleri);
       } catch (error) {
         console.error("Gagal mengambil data dari API:", error);
       } finally {
@@ -81,9 +85,7 @@ export default function BerandaKependudukan() {
             </p>
           </div>
           
-          
           <div className="relative z-10 shrink-0 flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-            
             <Link 
               href="/kependudukan/cek-kesehatan" 
               className="flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-sm px-6 py-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 shadow-lg whitespace-nowrap"
@@ -92,18 +94,16 @@ export default function BerandaKependudukan() {
               <FiArrowRight />
             </Link>
 
-            {/* Pilihan 2: Portal Lihat History Warga */}
             <Link 
               href="/warga/login-warga" 
               className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm">
-                  Lihat Riwayat Pengecekan
+                Lihat Riwayat Pengecekan
             </Link>
           </div>
-
         </div>
       </section>
 
-      {/* 3. GALERI KEGIATAN - LAYOUT DISAMAKAN PERSIS DENGAN KARTU BERITA */}
+      {/* 3. GALERI KEGIATAN */}
       <section className="max-w-5xl mx-auto px-6 mt-28">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 border-b border-gray-100 pb-6">
           <div>
@@ -126,7 +126,6 @@ export default function BerandaKependudukan() {
                 key={item.id} 
                 className="group flex flex-col bg-white p-4 rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_40px_rgba(10,22,128,0.08)] transition-all duration-300 transform hover:-translate-y-1"
               >
-                {/* Pembungkus Gambar */}
                 <div className="h-56 rounded-2xl bg-gray-100 relative overflow-hidden mb-5 shadow-sm border border-gray-50">
                   {item.image_url ? (
                     <img 
@@ -141,12 +140,10 @@ export default function BerandaKependudukan() {
                   )}
                 </div>
 
-                {/* Informasi Waktu Unggah */}
                 <div className="flex items-center gap-2 text-gray-400 text-xs mb-3 font-medium">
                   <FiClock size={12} /> Diunggah: {formatDate(item.created_at)} 
                 </div>
 
-                {/* Judul Dokumentasi */}
                 <h3 className="font-bold text-xl text-[#1a1a1a] leading-tight group-hover:text-[#0a1680] transition-colors line-clamp-2 mb-3">
                   {item.title}
                 </h3>
@@ -156,7 +153,7 @@ export default function BerandaKependudukan() {
         ) : (
           <div className="text-center py-16 bg-white rounded-3xl border-2 border-dashed border-gray-100 flex flex-col items-center">
             <FiImage size={48} className="text-gray-200 mb-4" />
-            <p className="text-gray-400 font-medium">Belum ada dokumentasi kegiatan.</p>
+            <p className="text-gray-400 font-medium">Belum ada dokumentasi kegiatan kependudukan.</p>
           </div>
         )}
       </section>
@@ -236,7 +233,6 @@ export default function BerandaKependudukan() {
           />
           
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            
             <button 
               onClick={() => setSelectedNews(null)}
               className="absolute top-4 right-4 z-20 bg-white/80 backdrop-blur-xs p-2 rounded-full text-gray-700 hover:bg-gray-100 hover:text-black shadow-md transition-all"
@@ -273,7 +269,6 @@ export default function BerandaKependudukan() {
                 {selectedNews.content || "Tidak ada deskripsi detail berita."}
               </p>
             </div>
-
           </div>
         </div>
       )}

@@ -12,3 +12,21 @@ export async function createDocumentation(formData: FormData) {
     body: formData, 
   });
 }
+
+export async function updateDocumentation(id: string, formData: FormData) {
+  const cleanId = String(id).trim();
+  
+  return apiFetch(`/documentation/${cleanId}`, {
+    method: "PUT",
+    body: formData, 
+  });
+}
+
+
+export async function deleteDocumentation(id: string | number) {
+  const cleanId = String(id).trim();
+
+  return apiFetch(`/documentation/${cleanId}`, {
+    method: "DELETE",
+  });
+}
