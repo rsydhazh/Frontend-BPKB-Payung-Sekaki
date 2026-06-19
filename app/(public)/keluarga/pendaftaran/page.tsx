@@ -46,20 +46,21 @@ export default function PendaftaranKeluargaPage() {
     try {
       await createRegistration(formData as RegistrationPayload);
       setSubmitStatus({ type: "success", message: "Pendaftaran berhasil! Tim penyuluh KB akan segera memproses data Anda." });
-      handleReset();
+      handleReset(); 
     } catch (error) {
+      // 1. Biarkan error aslinya tetap di Konsol
       console.error("GAGAL DAFTAR KB:", error);
       
-      // Ambil pesan error aslinya jika ada
-      const pesanError = error instanceof Error ? error.message : "Terjadi kesalahan.";
-      
+      // 2. Ganti pesan UI
       setSubmitStatus({ 
         type: "error", 
-        message: `${pesanError} Coba periksa console (Inspect Element > Console) untuk detailnya.` 
+        message: "Pendaftaran gagal. Mohon pastikan kembali data yang Anda masukkan sudah valid, atau silakan coba beberapa saat lagi." 
       });
+      
+      // Auto-hilangkan notifikasi jika error saja
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
     } finally {
       setIsLoading(false);
-      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
     }
   };
 
@@ -167,7 +168,6 @@ export default function PendaftaranKeluargaPage() {
                 <select required value={formData.status_peserta} onChange={(e) => setFormData({...formData, status_peserta: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all text-sm appearance-none cursor-pointer">
                   <option value="" disabled>Pilih Status Peserta</option>
                   <option value="Peserta Baru">Peserta Baru</option>
-                  <option value="Peserta Aktif">Peserta Aktif</option>
                   <option value="Ganti Cara / Metode">Ganti Cara / Metode</option>
                   <option value="Drop Out / Putus Pakai">Drop Out / Putus Pakai</option>
                 </select>
@@ -229,6 +229,36 @@ export default function PendaftaranKeluargaPage() {
         </div>
 
       </div>
+
+          {/* MODAL POPUP */}
+      {submitStatus.type === "success" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
+            onClick={() => setSubmitStatus({ type: null, message: "" })}
+          ></div>
+          
+          {/* Kotak Popup Putih */}
+          <div className="bg-white rounded-[2rem] p-8 md:p-10 max-w-md w-full relative z-10 shadow-2xl text-center transform animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-[6px] border-green-100/50">
+              <FiCheckCircle className="text-green-500 text-5xl" />
+            </div>
+            
+            <h2 className="text-3xl font-black text-[#1a1a1a] mb-3">Berhasil!</h2>
+            <p className="text-gray-500 mb-8 leading-relaxed font-medium">
+              {submitStatus.message}
+            </p>
+            
+            <button 
+              onClick={() => setSubmitStatus({ type: null, message: "" })}
+              className="w-full bg-[#0a1680] hover:bg-[#f1b94c] text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-[#f1b94c]/30 transform active:scale-95"
+            >
+              Tutup & Selesai
+            </button>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

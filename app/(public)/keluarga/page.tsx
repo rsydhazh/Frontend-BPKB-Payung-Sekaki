@@ -90,19 +90,13 @@ export default function BerandaKeluargaPage() {
           
           <div className="relative z-10 shrink-0 flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             <Link 
-              href="/keluarga/pendaftaran-kb" 
+              href="/keluarga/pendaftaran" 
               className="flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-sm px-6 py-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 shadow-lg whitespace-nowrap"
             >
               Mulai Pendaftaran
               <FiArrowRight />
             </Link>
 
-            <Link 
-              href="/warga/login-warga" 
-              className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm"
-            >
-              Lihat Status Pendaftaran
-            </Link>
           </div>
         </div>
       </section>

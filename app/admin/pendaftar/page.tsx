@@ -10,13 +10,13 @@ export default function PendaftarAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fungsi untuk mengambil data dari API Mba Rani
+  // Fungsi untuk mengambil data dari API
   const fetchRegistrations = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await getRegistrations();
-      // Mengurutkan data dari yang paling baru jika ada created_at (opsional)
+      // Mengurutkan data dari yang paling baru 
       setRegistrations(data);
     } catch (err) {
       console.error(err);
@@ -96,35 +96,56 @@ export default function PendaftarAdminPage() {
             <p className="text-gray-400 font-medium">Data warga yang mendaftar melalui portal akan muncul di sini.</p>
           </div>
         ) : (
-          /* Tabel Data Tersedia */
+         /* Tabel Data Tersedia */
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
                 <tr>
                   <th className="px-6 py-4 font-bold uppercase tracking-wider">No</th>
                   <th className="px-6 py-4 font-bold uppercase tracking-wider">Nama Lengkap</th>
-                  <th className="px-6 py-4 font-bold uppercase tracking-wider">NIK</th>
-                  <th className="px-6 py-4 font-bold uppercase tracking-wider">Program / Layanan</th>
-                  <th className="px-6 py-4 font-bold uppercase tracking-wider">No. HP</th>
+                  <th className="px-6 py-4 font-bold uppercase tracking-wider">NIK & No. HP</th>
+                  <th className="px-6 py-4 font-bold uppercase tracking-wider">Status KB</th>
+                  <th className="px-6 py-4 font-bold uppercase tracking-wider">Jenis Layanan</th>
+                  <th className="px-6 py-4 font-bold uppercase tracking-wider">Faskes & Tgl Pelayanan</th>
                   <th className="px-6 py-4 font-bold uppercase tracking-wider text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-gray-700">
                 {registrations.map((reg, index) => (
                   <tr key={reg.id} className="hover:bg-gray-50/50 transition-colors">
+                    {/* 1. Nomor Urut */}
                     <td className="px-6 py-4 font-medium">{index + 1}</td>
+                    
+                    {/* 2. Nama Lengkap */}
                     <td className="px-6 py-4 font-bold text-[#1a1a1a]">{reg.full_name}</td>
-                    <td className="px-6 py-4">{reg.nik}</td>
+                    
+                    {/* 3. NIK & No HP (Digabung agar tabel tidak terlalu lebar) */}
                     <td className="px-6 py-4">
-                      <span className={`px-3 py-1 text-xs font-bold rounded-full ${
-                        reg.program_id.includes('KB') 
-                        ? 'bg-[#f1b94c]/20 text-[#d99c2b]' 
-                        : 'bg-[#0a1680]/10 text-[#0a1680]'
-                      }`}>
-                        {reg.program_id}
+                      <div className="font-medium text-gray-800">{reg.nik}</div>
+                      <div className="text-xs text-gray-500 mt-1">{reg.phone_number}</div>
+                    </td>
+                    
+                    {/* 4. Status Peserta KB */}
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-600">
+                        {reg.status_peserta || "-"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">{reg.phone_number}</td>
+
+                    {/* 5. Jenis Pelayanan KB */}
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1 text-xs font-bold rounded-full bg-pink-50 text-pink-600">
+                        {reg.jenis_kb || "-"}
+                      </span>
+                    </td>
+
+                    {/* 6. Faskes & Tanggal */}
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-gray-800">{reg.faskes || "-"}</div>
+                      <div className="text-xs text-gray-500 mt-1">{reg.tanggal_pelayanan || "-"}</div>
+                    </td>
+
+                    {/* 7. Tombol Aksi Hapus */}
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => handleDelete(reg.id)}
