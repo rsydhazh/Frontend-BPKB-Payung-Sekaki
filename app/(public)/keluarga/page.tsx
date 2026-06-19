@@ -29,9 +29,15 @@ export default function BerandaKeluargaPage() {
           .filter((n) => n.modul === "keluarga" || n.category?.toLowerCase() === "keluarga")
           .slice(0, 3);
 
-        // 2. Filter Galeri Khusus Modul Keluarga
+        // 2. Filter Galeri Khusus Modul Keluarga (PERBAIKAN DI SINI 🔥)
+        const filteredGaleri = allGaleri
+          .filter((g: Documentation & { modul?: string, category?: string }) => 
+            g.modul?.toLowerCase() === "keluarga" || g.category?.toLowerCase() === "keluarga"
+          )
+          .slice(0, 3);
+
         setHighlightBerita(filteredNews);
-        setHighlightGaleri(allGaleri.slice(0, 3));
+        setHighlightGaleri(filteredGaleri);
         
       } catch (error) {
         console.error("Gagal mengambil data dari API Modul Keluarga:", error);
@@ -66,7 +72,7 @@ export default function BerandaKeluargaPage() {
         </div>
       </section>
 
-      {/* 2. FEATURED SERVICE (Disulap Jadi Pendaftaran KB) */}
+      {/* 2. FEATURED SERVICE */}
       <section className="max-w-5xl mx-auto px-6 -mt-12">
         <div className="bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(10,22,128,0.12)] border border-blue-50 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative overflow-hidden">
           <div className="relative z-10">
