@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FiFileText, FiImage, FiBox, FiActivity, FiUsers } from "react-icons/fi";
+import { FiFileText, FiImage, FiBox, FiActivity, FiUsers, FiRefreshCw } from "react-icons/fi";
+
+// IMPORT API SERVICES (Pastikan path-nya sesuai dengan folder Ndoro ya!)
+import { getNews } from "@/services/newsService";
+import { getDocumentation } from "@/services/documentationService";
+import { getRegistrations } from "@/services/registrationService";
 
 interface ActivityItem {
   id: number;
@@ -12,14 +17,44 @@ interface ActivityItem {
 }
 
 export default function DashboardAdmin() {
-  const stats = {
+  // 1. Ubah stats menjadi state agar bisa berubah otomatis
+  const [stats, setStats] = useState({
     totalBerita: 0,
     totalGaleri: 0,
     programAktif: 0,
-    totalPendaftar: 0, // <-- Data baru!
-  };
+    totalPendaftar: 0, 
+  });
 
-  const recentActivities: ActivityItem[] = [];
+  const [isLoading, setIsLoading] = useState(true);
+  const recentActivities: ActivityItem[] = []; // Aktivitas masih kosong sementara
+
+  // 2. Gunakan useEffect untuk menarik data dari Backend saat halaman dibuka
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Menarik semua data secara bersamaan agar loading lebih cepat!
+        const [newsData, galeriData, pendaftarData] = await Promise.all([
+          getNews().catch(() => []), // Kalau error, anggap aja array kosong
+          getDocumentation().catch(() => []),
+          getRegistrations().catch(() => [])
+        ]);
+
+        // 3. Update angka stats berdasarkan panjang data (jumlah baris) yang didapat
+        setStats({
+          totalBerita: newsData.length || 0,
+          totalGaleri: galeriData.length || 0,
+          totalPendaftar: pendaftarData.length || 0,
+          programAktif: 1, // Placeholder: Bisa diisi manual atau pakai API Program nanti
+        });
+      } catch (error) {
+        console.error("Gagal mengambil data dashboard:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -29,50 +64,58 @@ export default function DashboardAdmin() {
         <p className="text-gray-500 font-medium">Pantau ringkasan data dan aktivitas portal Payung Sekaki.</p>
       </div>
 
-      {/* Stats Cards (Sekarang ada 4 kotak) */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        {/* Card Pendaftar (Baru & Prioritas) */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform">
-          <div className="w-14 h-14 bg-yellow-50 text-[#f1b94c] rounded-2xl flex items-center justify-center group-hover:bg-[#f1b94c] group-hover:text-white transition-colors">
+        {/* Card Pendaftar */}
+        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform relative overflow-hidden">
+          <div className="w-14 h-14 bg-yellow-50 text-[#f1b94c] rounded-2xl flex items-center justify-center group-hover:bg-[#f1b94c] group-hover:text-white transition-colors relative z-10">
             <FiUsers size={24} />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Pendaftar</p>
-            <h3 className="text-3xl font-black text-[#1a1a1a]">{stats.totalPendaftar}</h3>
+            <h3 className="text-3xl font-black text-[#1a1a1a]">
+              {isLoading ? <FiRefreshCw className="animate-spin text-gray-300 text-xl" /> : stats.totalPendaftar}
+            </h3>
           </div>
         </div>
 
         {/* Card Berita */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform">
-          <div className="w-14 h-14 bg-blue-50 text-[#0a1680] rounded-2xl flex items-center justify-center group-hover:bg-[#0a1680] group-hover:text-white transition-colors">
+        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform relative overflow-hidden">
+          <div className="w-14 h-14 bg-blue-50 text-[#0a1680] rounded-2xl flex items-center justify-center group-hover:bg-[#0a1680] group-hover:text-white transition-colors relative z-10">
             <FiFileText size={24} />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Berita</p>
-            <h3 className="text-3xl font-black text-[#1a1a1a]">{stats.totalBerita}</h3>
+            <h3 className="text-3xl font-black text-[#1a1a1a]">
+              {isLoading ? <FiRefreshCw className="animate-spin text-gray-300 text-xl" /> : stats.totalBerita}
+            </h3>
           </div>
         </div>
 
         {/* Card Program */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform">
-          <div className="w-14 h-14 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors">
+        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform relative overflow-hidden">
+          <div className="w-14 h-14 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors relative z-10">
             <FiBox size={24} />
           </div>
-          <div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Program Hack</p>
-            <h3 className="text-3xl font-black text-[#1a1a1a]">{stats.programAktif}</h3>
+          <div className="relative z-10">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Program Aktif</p>
+            <h3 className="text-3xl font-black text-[#1a1a1a]">
+              {isLoading ? <FiRefreshCw className="animate-spin text-gray-300 text-xl" /> : stats.programAktif}
+            </h3>
           </div>
         </div>
 
         {/* Card Galeri */}
-        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform">
-          <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors">
+        <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex items-center gap-6 group hover:-translate-y-1 transition-transform relative overflow-hidden">
+          <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center group-hover:bg-purple-600 group-hover:text-white transition-colors relative z-10">
             <FiImage size={24} />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Galeri</p>
-            <h3 className="text-3xl font-black text-[#1a1a1a]">{stats.totalGaleri}</h3>
+            <h3 className="text-3xl font-black text-[#1a1a1a]">
+              {isLoading ? <FiRefreshCw className="animate-spin text-gray-300 text-xl" /> : stats.totalGaleri}
+            </h3>
           </div>
         </div>
 
