@@ -63,7 +63,7 @@ export default function UmumHomePage() {
             Selamat Datang di
           </span>
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-6 tracking-tight drop-shadow-md">
-            Balai Penyuluh KB <span className="text-[#f1b94c]">Payung Sekaki</span>
+            Balai Penyuluhan KB <span className="text-[#f1b94c]">Kecamatan Payung Sekaki</span>
           </h1>
           <p className="text-[#93b2f8] text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
             Pusat informasi kegiatan, layanan kependudukan, dan program kesejahteraan masyarakat secara transparan dan akurat.
