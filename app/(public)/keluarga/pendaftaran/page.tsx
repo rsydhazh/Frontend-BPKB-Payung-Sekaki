@@ -7,7 +7,7 @@ import { RegistrationPayload } from "@/types/registration";
 
 export default function PendaftaranKeluargaPage() {
   const [formData, setFormData] = useState<RegistrationPayload>({
-    program_id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", 
+    program_id: "c96b6f08-825a-43cf-9e5f-352274a0dcd2", 
     full_name: "",
     nik: "",
     phone_number: "",
@@ -73,7 +73,7 @@ export default function PendaftaranKeluargaPage() {
               <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
                 <FiEdit3 className="text-5xl text-[#f1b94c] mx-auto mb-6" />
                 <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
-                   Formulir Pendaftaran <span className="text-[#f1b94c]">Akseptor KB</span>
+                   Formulir Pendaftaran <span className="text-[#f1b94c]">Pelayanan KB</span>
                 </h1>
                 <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
                   Lengkapi data diri Anda di bawah ini dengan sebenar-benarnya untuk mendaftar pelayanan Keluarga Berencana.
@@ -134,7 +134,7 @@ export default function PendaftaranKeluargaPage() {
             {/* Alamat Lengkap */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-2">Alamat Lengkap <span className="text-red-500">*</span></label>
-              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Masukkan alamat lengkap termasuk RT/RW, kelurahan, dan kecamatan..." className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all resize-none text-sm"></textarea>
+              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Masukkan alamat lengkap..." className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all resize-none text-sm"></textarea>
             </div>
 
             {/* Tanggal Lahir & Faskes */}
