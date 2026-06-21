@@ -40,6 +40,29 @@ export default function PendaftaranKeluargaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // validasi nik hanya 16
+    const nikRegex = /^[0-9]{16}$/;
+    if (!nikRegex.test(formData.nik)) {
+      setSubmitStatus({ 
+        type: "error", 
+        message: "Data tidak valid! NIK harus terdiri dari tepat 16 digit angka." 
+      });
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
+      return;
+    }
+
+    // validasi no hp
+    const phoneRegex = /^[0-9]{10,13}$/;
+    if (!phoneRegex.test(formData.phone_number)) {
+      setSubmitStatus({ 
+        type: "error", 
+        message: "Data tidak valid! Nomor Telepon harus berupa 10 hingga 13 digit angka." 
+      });
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
+      return; 
+    }
+
     setIsLoading(true);
     setSubmitStatus({ type: null, message: "" });
 
