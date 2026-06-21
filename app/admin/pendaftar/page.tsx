@@ -132,10 +132,10 @@ export default function PendaftarAdminPage() {
                       </span>
                     </td>
 
-                    {/* 5. Jenis Pelayanan KB */}
+                    {/* 5. Jenis Program */}
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 text-xs font-bold rounded-full bg-pink-50 text-pink-600">
-                        {reg.jenis_kb || "-"}
+                        {reg.program_id || "-"}
                       </span>
                     </td>
 
