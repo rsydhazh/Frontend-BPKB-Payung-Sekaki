@@ -53,11 +53,11 @@ export default function PendaftaranKeluargaPage() {
     }
 
     // validasi no hp
-    const phoneRegex = /^[0-9]{10,13}$/;
+    const phoneRegex = /^[0-9]{11,12}$/;
     if (!phoneRegex.test(formData.phone_number)) {
       setSubmitStatus({ 
         type: "error", 
-        message: "Data tidak valid! Nomor Telepon harus berupa 10 hingga 13 digit angka." 
+        message: "Data tidak valid! Nomor Telepon harus berupa 11 hingga 12 digit angka." 
       });
       setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
       return; 
