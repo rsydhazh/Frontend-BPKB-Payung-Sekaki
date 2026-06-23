@@ -97,6 +97,13 @@ export default function BerandaKeluargaPage() {
               <FiArrowRight />
             </Link>
 
+            <Link 
+              href="/keluarga/cek-status" 
+              className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm"
+            >
+              Cek Status Pendaftaran
+            </Link>
+
           </div>
         </div>
       </section>

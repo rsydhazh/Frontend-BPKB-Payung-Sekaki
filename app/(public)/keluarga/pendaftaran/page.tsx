@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FiSend, FiCheckCircle, FiInfo, FiEdit3, FiUser, FiCreditCard, FiCalendar, FiMapPin, FiRefreshCw, FiPhone, FiAlertCircle } from "react-icons/fi";
 import { createRegistration } from "@/services/registrationService";
 import { RegistrationPayload } from "@/types/registration"; 
@@ -253,7 +254,7 @@ export default function PendaftaranKeluargaPage() {
 
       </div>
 
-          {/* MODAL POPUP */}
+      {/* MODAL POPUP */}
       {submitStatus.type === "success" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div 
@@ -262,22 +263,31 @@ export default function PendaftaranKeluargaPage() {
           ></div>
           
           {/* Kotak Popup Putih */}
-          <div className="bg-white rounded-[2rem] p-8 md:p-10 max-w-md w-full relative z-10 shadow-2xl text-center transform animate-in fade-in zoom-in-95 duration-300">
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-md w-full relative z-10 shadow-2xl text-center transform animate-in fade-in zoom-in-95 duration-300">
             <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-[6px] border-green-100/50">
               <FiCheckCircle className="text-green-500 text-5xl" />
             </div>
             
             <h2 className="text-3xl font-black text-[#1a1a1a] mb-3">Berhasil!</h2>
-            <p className="text-gray-500 mb-8 leading-relaxed font-medium">
-              {submitStatus.message}
+            <p className="text-gray-500 mb-6 leading-relaxed font-medium">
+              Data pendaftaran Anda telah tersimpan. Gunakan <strong>16 digit NIK</strong> Anda untuk melacak status pendaftaran di halaman Cek Status.
             </p>
             
-            <button 
-              onClick={() => setSubmitStatus({ type: null, message: "" })}
-              className="w-full bg-[#0a1680] hover:bg-[#f1b94c] text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-[#f1b94c]/30 transform active:scale-95"
-            >
-              Tutup & Selesai
-            </button>
+            <div className="flex flex-col gap-3">
+              {/* Tombol yang langsung membawa warga ke halaman cek status */}
+              <Link 
+                href="/keluarga/cek-status"
+                className="w-full flex justify-center bg-[#0a1680] hover:bg-[#f1b94c] text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-[#f1b94c]/30 transform active:scale-95"
+              >
+                Cek Status Sekarang
+              </Link>
+              <button 
+                onClick={() => setSubmitStatus({ type: null, message: "" })}
+                className="w-full bg-white text-[#0a1680] font-bold py-4 px-6 rounded-xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] transition-all transform active:scale-95"
+              >
+                Tutup & Kembali
+              </button>
+            </div>
           </div>
         </div>
       )}
