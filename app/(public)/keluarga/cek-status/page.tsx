@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FiSearch, FiClock, FiCheckCircle, FiActivity, FiCreditCard, FiRefreshCw, FiAlertCircle, FiList, FiMessageCircle } from "react-icons/fi";
 import { createClient } from "@supabase/supabase-js";
 
-// Inisialisasi Supabase Publik (Jurus Ninja bypass Login Admin)
+// Inisialisasi Supabase Publik
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -17,6 +17,7 @@ type KBRegistration = {
   status_peserta?: string;
   tanggal_pelayanan?: string;
   created_at?: string;
+  status_layanan?: string;
 };
 
 type RiwayatLog = {
@@ -78,27 +79,20 @@ export default function CekStatusKBPage() {
     }
   };
 
-  // Logika membandingkan tanggal (Apakah sudah lewat atau belum)
-  const getStatusPelayanan = (tanggalPelayanan?: string) => {
-    if (!tanggalPelayanan) return { status: "Diproses", warna: "bg-blue-100 text-blue-700", pesan: "Admin Balai akan menghubungi Anda melalui WhatsApp." };
-    
-    const hariIni = new Date();
-    hariIni.setHours(0, 0, 0, 0);
-    
-    const tglLayanan = new Date(tanggalPelayanan);
-    tglLayanan.setHours(0, 0, 0, 0);
-
-    if (hariIni > tglLayanan) {
+  // Logika membaca status langsung dari database (hasil klik Admin)
+  const getStatusPelayanan = (statusDariAdmin?: string) => {
+    if (statusDariAdmin === "Selesai") {
       return { 
         status: "Selesai", 
         warna: "bg-green-100 text-green-700 border-green-200", 
-        pesan: "Pelayanan telah selesai dilaksanakan sesuai jadwal." 
+        pesan: "Pelayanan Selesai! Anda sudah dilayani oleh tim Balai Penyuluh KB Payung Sekaki. Terima kasih atas partisipasi Anda." 
       };
     } else {
+      // Default jika statusnya masih "Diproses" atau kosong
       return { 
         status: "Diproses", 
         warna: "bg-yellow-100 text-yellow-700 border-yellow-200", 
-        pesan: "Admin Balai akan menghubungi Anda melalui WhatsApp untuk konfirmasi." 
+        pesan: "Data sedang diproses. Admin Balai akan segera menghubungi Anda melalui WhatsApp untuk konfirmasi jadwal." 
       };
     }
   };
@@ -173,7 +167,7 @@ export default function CekStatusKBPage() {
               </h3>
               
               {riwayatData.map((item, index) => {
-                const infoStatus = getStatusPelayanan(item.tanggal_pelayanan);
+                const infoStatus = getStatusPelayanan(item.status_layanan);
 
                 return (
                   <div key={index} className="bg-white rounded-3xl p-6 sm:p-8 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col hover:shadow-md transition-shadow relative overflow-hidden">

@@ -96,7 +96,7 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={handleEmailKeyDown} // <-- 3. Memasang deteksi tombol Enter
-              placeholder="admin@payungsekaki.com"
+              placeholder="BPKBpayungsekaki@gmail.com"
               className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#93b2f8] transition-all"
             />
           </div>
