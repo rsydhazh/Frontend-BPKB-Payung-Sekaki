@@ -29,9 +29,15 @@ export default function BerandaKeluargaPage() {
           .filter((n) => n.modul === "keluarga" || n.category?.toLowerCase() === "keluarga")
           .slice(0, 3);
 
-        // 2. Filter Galeri Khusus Modul Keluarga
+        // 2. Filter Galeri Khusus Modul Keluarga (PERBAIKAN DI SINI 🔥)
+        const filteredGaleri = allGaleri
+          .filter((g: Documentation & { modul?: string, category?: string }) => 
+            g.modul?.toLowerCase() === "keluarga" || g.category?.toLowerCase() === "keluarga"
+          )
+          .slice(0, 3);
+
         setHighlightBerita(filteredNews);
-        setHighlightGaleri(allGaleri.slice(0, 3));
+        setHighlightGaleri(filteredGaleri);
         
       } catch (error) {
         console.error("Gagal mengambil data dari API Modul Keluarga:", error);
@@ -66,7 +72,7 @@ export default function BerandaKeluargaPage() {
         </div>
       </section>
 
-      {/* 2. FEATURED SERVICE (Disulap Jadi Pendaftaran KB) */}
+      {/* 2. FEATURED SERVICE */}
       <section className="max-w-5xl mx-auto px-6 -mt-12">
         <div className="bg-white rounded-3xl p-8 md:p-12 shadow-[0_20px_50px_rgba(10,22,128,0.12)] border border-blue-50 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8 relative overflow-hidden">
           <div className="relative z-10">
@@ -84,7 +90,7 @@ export default function BerandaKeluargaPage() {
           
           <div className="relative z-10 shrink-0 flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
             <Link 
-              href="/keluarga/pendaftaran-kb" 
+              href="/keluarga/pendaftaran" 
               className="flex items-center justify-center gap-3 bg-[#0a1680] text-white font-bold text-sm px-6 py-4 rounded-2xl hover:bg-opacity-90 transition-all duration-300 shadow-lg whitespace-nowrap"
             >
               Mulai Pendaftaran
@@ -92,11 +98,12 @@ export default function BerandaKeluargaPage() {
             </Link>
 
             <Link 
-              href="/warga/login-warga" 
+              href="/keluarga/cek-status" 
               className="flex items-center justify-center gap-3 bg-white text-[#0a1680] font-bold text-sm px-6 py-4 rounded-2xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] hover:bg-blue-50/50 transition-all duration-300 whitespace-nowrap shadow-sm"
             >
-              Lihat Status Pendaftaran
+              Cek Status Pendaftaran
             </Link>
+
           </div>
         </div>
       </section>

@@ -14,11 +14,12 @@ export default function GaleriKeluargaPage() {
       try {
         const data = await getDocumentation();
         
-        const filtered = (data as unknown as Array<{ id: number; title: string; image_url: string; created_at?: string; modul?: string }>).filter(
-          (item) => item.modul?.toLowerCase() === "keluarga"
+        // Memakai Intersection Type agar aman dari TypeScript
+        const filtered = data.filter((item: Documentation & { modul?: string; category?: string }) => 
+          item.modul?.toLowerCase() === "keluarga" || item.category?.toLowerCase() === "keluarga"
         );
         
-        setGaleriData(filtered as unknown as Documentation[]);
+        setGaleriData(filtered);
       } catch (error) {
         console.error("Gagal mengambil galeri keluarga:", error);
       } finally {

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FiSend, FiCheckCircle, FiInfo, FiEdit3, FiUser, FiCreditCard, FiCalendar, FiMapPin, FiRefreshCw, FiPhone, FiAlertCircle } from "react-icons/fi";
 import { createRegistration } from "@/services/registrationService";
 import { RegistrationPayload } from "@/types/registration"; 
 
 export default function PendaftaranKeluargaPage() {
   const [formData, setFormData] = useState<RegistrationPayload>({
-    program_id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", 
+    program_id: "c96b6f08-825a-43cf-9e5f-352274a0dcd2", 
     full_name: "",
     nik: "",
     phone_number: "",
@@ -40,26 +41,50 @@ export default function PendaftaranKeluargaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // validasi nik hanya 16
+    const nikRegex = /^[0-9]{16}$/;
+    if (!nikRegex.test(formData.nik)) {
+      setSubmitStatus({ 
+        type: "error", 
+        message: "Data tidak valid! NIK harus terdiri dari tepat 16 digit angka." 
+      });
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
+      return;
+    }
+
+    // validasi no hp
+    const phoneRegex = /^[0-9]{11,12}$/;
+    if (!phoneRegex.test(formData.phone_number)) {
+      setSubmitStatus({ 
+        type: "error", 
+        message: "Data tidak valid! Nomor Telepon harus berupa 11 hingga 12 digit angka." 
+      });
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
+      return; 
+    }
+
     setIsLoading(true);
     setSubmitStatus({ type: null, message: "" });
 
     try {
       await createRegistration(formData as RegistrationPayload);
       setSubmitStatus({ type: "success", message: "Pendaftaran berhasil! Tim penyuluh KB akan segera memproses data Anda." });
-      handleReset();
+      handleReset(); 
     } catch (error) {
+      // 1. Biarkan error aslinya tetap di Konsol
       console.error("GAGAL DAFTAR KB:", error);
       
-      // Ambil pesan error aslinya jika ada
-      const pesanError = error instanceof Error ? error.message : "Terjadi kesalahan.";
-      
+      // 2. Ganti pesan UI
       setSubmitStatus({ 
         type: "error", 
-        message: `${pesanError} Coba periksa console (Inspect Element > Console) untuk detailnya.` 
+        message: "Pendaftaran gagal. Mohon pastikan kembali data yang Anda masukkan sudah valid, atau silakan coba beberapa saat lagi." 
       });
+      
+      // Auto-hilangkan notifikasi jika error saja
+      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
     } finally {
       setIsLoading(false);
-      setTimeout(() => setSubmitStatus({ type: null, message: "" }), 7000);
     }
   };
 
@@ -73,7 +98,7 @@ export default function PendaftaranKeluargaPage() {
               <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-16 text-center">
                 <FiEdit3 className="text-5xl text-[#f1b94c] mx-auto mb-6" />
                 <h1 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">
-                   Formulir Pendaftaran <span className="text-[#f1b94c]">Akseptor KB</span>
+                   Formulir Pendaftaran <span className="text-[#f1b94c]">Pelayanan KB</span>
                 </h1>
                 <p className="text-[#93b2f8] text-lg max-w-2xl mx-auto font-medium leading-relaxed">
                   Lengkapi data diri Anda di bawah ini dengan sebenar-benarnya untuk mendaftar pelayanan Keluarga Berencana.
@@ -134,7 +159,7 @@ export default function PendaftaranKeluargaPage() {
             {/* Alamat Lengkap */}
             <div>
               <label className="block text-sm font-bold text-[#1a1a1a] mb-2">Alamat Lengkap <span className="text-red-500">*</span></label>
-              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Masukkan alamat lengkap termasuk RT/RW, kelurahan, dan kecamatan..." className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all resize-none text-sm"></textarea>
+              <textarea required rows={3} value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} placeholder="Masukkan alamat lengkap..." className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all resize-none text-sm"></textarea>
             </div>
 
             {/* Tanggal Lahir & Faskes */}
@@ -167,7 +192,6 @@ export default function PendaftaranKeluargaPage() {
                 <select required value={formData.status_peserta} onChange={(e) => setFormData({...formData, status_peserta: e.target.value})} className="w-full border border-gray-200 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#0a1680]/30 focus:border-[#0a1680] bg-gray-50 focus:bg-white transition-all text-sm appearance-none cursor-pointer">
                   <option value="" disabled>Pilih Status Peserta</option>
                   <option value="Peserta Baru">Peserta Baru</option>
-                  <option value="Peserta Aktif">Peserta Aktif</option>
                   <option value="Ganti Cara / Metode">Ganti Cara / Metode</option>
                   <option value="Drop Out / Putus Pakai">Drop Out / Putus Pakai</option>
                 </select>
@@ -229,6 +253,45 @@ export default function PendaftaranKeluargaPage() {
         </div>
 
       </div>
+
+      {/* MODAL POPUP */}
+      {submitStatus.type === "success" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
+            onClick={() => setSubmitStatus({ type: null, message: "" })}
+          ></div>
+          
+          {/* Kotak Popup Putih */}
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-md w-full relative z-10 shadow-2xl text-center transform animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border-[6px] border-green-100/50">
+              <FiCheckCircle className="text-green-500 text-5xl" />
+            </div>
+            
+            <h2 className="text-3xl font-black text-[#1a1a1a] mb-3">Berhasil!</h2>
+            <p className="text-gray-500 mb-6 leading-relaxed font-medium">
+              Data pendaftaran Anda telah tersimpan. Gunakan <strong>16 digit NIK</strong> Anda untuk melacak status pendaftaran di halaman Cek Status.
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              {/* Tombol yang langsung membawa warga ke halaman cek status */}
+              <Link 
+                href="/keluarga/cek-status"
+                className="w-full flex justify-center bg-[#0a1680] hover:bg-[#f1b94c] text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-[#f1b94c]/30 transform active:scale-95"
+              >
+                Cek Status Sekarang
+              </Link>
+              <button 
+                onClick={() => setSubmitStatus({ type: null, message: "" })}
+                className="w-full bg-white text-[#0a1680] font-bold py-4 px-6 rounded-xl border-2 border-[#0a1680]/20 hover:border-[#0a1680] transition-all transform active:scale-95"
+              >
+                Tutup & Kembali
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

@@ -15,14 +15,11 @@ import {
 
 const menuItems = [
   { name: "Dashboard", icon: FiHome, path: "/admin" },
+  { name: "Galeri", icon: FiImage, path: "/admin/galeri" },
   { name: "Berita", icon: FiFileText, path: "/admin/berita" },
   { name: "Program", icon: FiBox, path: "/admin/program" },
   { name: "Data Pendaftar", icon: FiUsers, path: "/admin/pendaftar" },
-  
-  // 🔥 MENU CEK KESEHATAN WARGA AMAN
   { name: "Cek Kesehatan", icon: FiHeart, path: "/admin/cek-kesehatan" },
-  
-  { name: "Galeri", icon: FiImage, path: "/admin/galeri" },
   { name: "Pengaturan", icon: FiSettings, path: "/admin/pengaturan" },
 ];
 

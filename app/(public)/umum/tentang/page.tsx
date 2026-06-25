@@ -26,7 +26,7 @@ export default async function UmumTentangPage() {
           <FiInfo className="text-3xl text-[#0a1680]" />
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-[#1a1a1a] mb-6 tracking-tight">
-          Tentang <span className="text-[#0a1680]">Balai Penyuluh KB Payung Sekaki</span>
+          Tentang <span className="text-[#0a1680]">Balai Penyuluhan  KB Payung Sekaki</span>
         </h1>
         <p className="text-gray-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
           Profil, sejarah, visi misi, struktur organisasi, dan daftar layanan posyandu di wilayah binaan Balai KB Payung Sekaki.
