@@ -13,7 +13,7 @@ export interface Registration {
   jenis_kb?: string;
   tanggal_pelayanan?: string;
   created_at?: string; 
-  status_layanan?: string;
+  status_layanan?: string; 
 }
 
 export interface RegistrationPayload {
@@ -27,4 +27,5 @@ export interface RegistrationPayload {
   status_peserta?: string;
   jenis_kb?: string;
   tanggal_pelayanan?: string;
+  status_layanan?: string;
 }

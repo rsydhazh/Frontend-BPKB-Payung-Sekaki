@@ -13,11 +13,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Menambahkan kolom status_layanan agar TypeScript tidak marah
-type ExtendedRegistration = Registration & { status_layanan?: string };
-
 export default function PendaftarAdminPage() {
-  const [registrations, setRegistrations] = useState<ExtendedRegistration[]>([]);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +24,7 @@ export default function PendaftarAdminPage() {
     setError(null);
     try {
       const data = await getRegistrations();
-      setRegistrations(data as ExtendedRegistration[]);
+      setRegistrations(data as Registration[]);
     } catch (err) {
       console.error(err);
       setError("Gagal mengambil data pendaftar. Pastikan koneksi server backend berjalan baik.");
@@ -41,14 +38,14 @@ export default function PendaftarAdminPage() {
     fetchRegistrations();
   }, []);
 
-  // FUNGSI BARU: Sihir Mengubah Data Menjadi Dokumen PDF Resmi Balai
+  // FUNGSI BARU: Mengubah Data Menjadi Dokumen PDF Resmi Balai
   const exportToPDF = () => {
     if (registrations.length === 0) return;
 
-    // 1. Inisialisasi Kertas PDF dengan Posisi Landscape (Melebar) agar Muat Banyak Kolom
+    // 1. Inisialisasi Kertas PDF posisi Landscape
     const doc = new jsPDF({ orientation: "landscape", format: "a4" });
     
-    // 2. Desain Kop/Judul Laporan
+    // 2. Desain Kop/Judul Laporan menggunakan setTextColor standar jsPDF terbaru
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.setTextColor(26, 26, 26);
@@ -60,7 +57,7 @@ export default function PendaftarAdminPage() {
     doc.text("Laporan Data Pendaftar Pelayanan Keluarga Berencana (KB) Online", 14, 21);
     doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'long' })}`, 14, 26);
     
-    // 3. Ekstrak dan Petakan Data dari Array State ke Baris Tabel PDF
+    // 3. Ekstrak data pendaftar ke baris PDF
     const tableRows = registrations.map((reg, index) => [
       index + 1,
       reg.full_name,
@@ -73,7 +70,7 @@ export default function PendaftarAdminPage() {
       reg.status_layanan || "Diproses"
     ]);
 
-    // 4. Gambar Tabel Secara Otomatis ke dalam Dokumen
+    // 4. Cetak Tabel dengan properti 'cellWidth' (Bukan width) agar TypeScript bahagia
     autoTable(doc, {
       head: [["No", "Nama Lengkap", "NIK", "No. HP", "Status KB", "Jenis Layanan", "Faskes Tujuan", "Tanggal Pelayanan", "Status Tracking"]],
       body: tableRows,
@@ -81,19 +78,19 @@ export default function PendaftarAdminPage() {
       theme: "grid",
       styles: { font: "helvetica", fontSize: 9, cellPadding: 3 },
       headStyles: { 
-        fillColor: [10, 22, 128], // Warna biru gelap #0a1680 khas tema Ndoro
+        fillColor: [10, 22, 128], // Warna tema biru gelap #0a1680
         textColor: [255, 255, 255], 
         fontStyle: "bold",
         halign: "center"
       },
       columnStyles: {
-        0: { halign: "center", cellWidth: 10 },
+        0: { halign: "center", cellWidth: 12 }, // Menggunakan cellWidth sesuai aturan TypeScript
         7: { halign: "center" },
         8: { halign: "center", fontStyle: "bold" }
       }
     });
 
-    // 5. Unduh File Langsung ke Laptop Pengguna
+    // 5. Unduh Dokumen PDF
     const fileDate = new Date().toISOString().slice(0, 10);
     doc.save(`Laporan_Pendaftar_KB_${fileDate}.pdf`);
   };
@@ -149,7 +146,7 @@ export default function PendaftarAdminPage() {
         
         {/* BLOK TOMBOL AKSI */}
         <div className="flex items-center gap-3">
-          {/* TOMBOL BARU: DOWNLOAD PDF */}
+          {/* TOMBOL PDF */}
           <button 
             onClick={exportToPDF}
             disabled={isLoading || registrations.length === 0}
@@ -218,39 +215,26 @@ export default function PendaftarAdminPage() {
               <tbody className="divide-y divide-gray-100 text-gray-700">
                 {registrations.map((reg, index) => (
                   <tr key={reg.id} className="hover:bg-gray-50/50 transition-colors">
-                    {/* 1. Nomor Urut */}
                     <td className="px-6 py-4 font-medium">{index + 1}</td>
-                    
-                    {/* 2. Nama Lengkap */}
                     <td className="px-6 py-4 font-bold text-[#1a1a1a]">{reg.full_name}</td>
-                    
-                    {/* 3. NIK & No HP */}
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-800">{reg.nik}</div>
                       <div className="text-xs text-gray-500 mt-1">{reg.phone_number}</div>
                     </td>
-                    
-                    {/* 4. Status Peserta KB */}
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-600">
                         {reg.status_peserta || "-"}
                       </span>
                     </td>
-
-                    {/* 5. Jenis Program */}
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 text-xs font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-100">
                         {reg.program_id || "-"}
                       </span>
                     </td>
-
-                    {/* 6. Faskes & Tanggal */}
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-800">{reg.faskes || "-"}</div>
                       <div className="text-xs text-gray-500 mt-1">{reg.tanggal_pelayanan || "-"}</div>
                     </td>
-
-                    {/* 7. UPDATE TRACKING WARGA */}
                     <td className="px-6 py-4 text-center">
                       <select
                         value={reg.status_layanan || "Diproses"}
@@ -265,13 +249,10 @@ export default function PendaftarAdminPage() {
                         <option value="Selesai">Selesai</option>
                       </select>
                     </td>
-
-                    {/* 8. Tombol Aksi Hapus */}
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => handleDelete(reg.id)}
                         className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                        title="Hapus Data"
                       >
                         <FiTrash2 size={18} />
                       </button>
