@@ -38,14 +38,12 @@ export default function PendaftarAdminPage() {
     fetchRegistrations();
   }, []);
 
-  // FUNGSI BARU: Mengubah Data Menjadi Dokumen PDF Resmi Balai
+  // Fungsi Cetak PDF
   const exportToPDF = () => {
     if (registrations.length === 0) return;
 
-    // 1. Inisialisasi Kertas PDF posisi Landscape
     const doc = new jsPDF({ orientation: "landscape", format: "a4" });
     
-    // 2. Desain Kop/Judul Laporan menggunakan setTextColor standar jsPDF terbaru
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.setTextColor(26, 26, 26);
@@ -57,45 +55,41 @@ export default function PendaftarAdminPage() {
     doc.text("Laporan Data Pendaftar Pelayanan Keluarga Berencana (KB) Online", 14, 21);
     doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'long' })}`, 14, 26);
     
-    // 3. Ekstrak data pendaftar ke baris PDF
     const tableRows = registrations.map((reg, index) => [
       index + 1,
       reg.full_name,
       reg.nik,
       reg.phone_number,
       reg.status_peserta || "-",
-      reg.program_id || "-",
+      reg.jenis_kb || "-", // <-- SUDAH DIUBAH: PDF sekarang menampilkan jenis KB yang bisa dibaca!
       reg.faskes || "-",
       reg.tanggal_pelayanan ? new Date(reg.tanggal_pelayanan).toLocaleDateString('id-ID') : "-",
       reg.status_layanan || "Diproses"
     ]);
 
-    // 4. Cetak Tabel dengan properti 'cellWidth' (Bukan width) agar TypeScript bahagia
     autoTable(doc, {
-      head: [["No", "Nama Lengkap", "NIK", "No. HP", "Status KB", "Jenis Layanan", "Faskes Tujuan", "Tanggal Pelayanan", "Status Tracking"]],
+      head: [["No", "Nama Lengkap", "NIK", "No. HP", "Status Peserta", "Jenis Layanan KB", "Faskes Tujuan", "Tanggal Pelayanan", "Status Tracking"]],
       body: tableRows,
       startY: 32,
       theme: "grid",
       styles: { font: "helvetica", fontSize: 9, cellPadding: 3 },
       headStyles: { 
-        fillColor: [10, 22, 128], // Warna tema biru gelap #0a1680
+        fillColor: [10, 22, 128],
         textColor: [255, 255, 255], 
         fontStyle: "bold",
         halign: "center"
       },
       columnStyles: {
-        0: { halign: "center", cellWidth: 12 }, // Menggunakan cellWidth sesuai aturan TypeScript
+        0: { halign: "center", cellWidth: 12 },
         7: { halign: "center" },
         8: { halign: "center", fontStyle: "bold" }
       }
     });
 
-    // 5. Unduh Dokumen PDF
     const fileDate = new Date().toISOString().slice(0, 10);
     doc.save(`Laporan_Pendaftar_KB_${fileDate}.pdf`);
   };
 
-  // Update Status Layanan Warga
   const handleUpdateStatus = async (id: number | string, newStatus: string) => {
     try {
       const { error } = await supabase
@@ -117,7 +111,6 @@ export default function PendaftarAdminPage() {
     }
   };
 
-  // Fungsi untuk menghapus data pendaftar
   const handleDelete = async (id: number) => {
     const confirmDelete = window.confirm("Apakah Anda yakin ingin menghapus data pendaftar ini?");
     if (!confirmDelete) return;
@@ -135,7 +128,6 @@ export default function PendaftarAdminPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       
-      {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-extrabold text-[#1a1a1a] mb-2">Data Pendaftar</h1>
@@ -144,9 +136,7 @@ export default function PendaftarAdminPage() {
           </p>
         </div>
         
-        {/* BLOK TOMBOL AKSI */}
         <div className="flex items-center gap-3">
-          {/* TOMBOL PDF */}
           <button 
             onClick={exportToPDF}
             disabled={isLoading || registrations.length === 0}
@@ -170,17 +160,14 @@ export default function PendaftarAdminPage() {
         </div>
       </div>
 
-      {/* Area Tabel */}
       <div className="bg-white rounded-[2rem] shadow-[0_10px_30px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden">
         
-        {/* State Loading */}
         {isLoading ? (
           <div className="p-20 text-center flex flex-col items-center justify-center">
             <FiRefreshCw className="text-[#0a1680] text-4xl animate-spin mb-4" />
             <p className="text-gray-500 font-medium">Sedang menarik data dari server...</p>
           </div>
         ) : error ? (
-          /* State Error */
           <div className="p-20 text-center flex flex-col items-center justify-center">
             <FiAlertCircle className="text-red-500 text-5xl mb-4" />
             <h3 className="text-xl font-bold text-gray-800 mb-2">Terjadi Kesalahan</h3>
@@ -188,7 +175,6 @@ export default function PendaftarAdminPage() {
             <button onClick={fetchRegistrations} className="px-6 py-2 bg-[#0a1680] text-white font-bold rounded-lg hover:bg-[#f1b94c] transition-colors">Coba Lagi</button>
           </div>
         ) : registrations.length === 0 ? (
-          /* State Kosong */
           <div className="p-20 text-center flex flex-col items-center justify-center">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <FiUsers className="text-gray-300" size={48} />
@@ -197,7 +183,6 @@ export default function PendaftarAdminPage() {
             <p className="text-gray-400 font-medium">Data warga yang mendaftar melalui portal akan muncul di sini.</p>
           </div>
         ) : (
-         /* Tabel Data Tersedia */
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-gray-50 text-gray-500 border-b border-gray-100">
@@ -226,14 +211,17 @@ export default function PendaftarAdminPage() {
                         {reg.status_peserta || "-"}
                       </span>
                     </td>
+                    
+                    {/* SUDAH DIUBAH: Tidak lagi memanggil program_id, melainkan jenis_kb */}
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 text-xs font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-100">
-                        {reg.program_id || "-"}
+                        {reg.jenis_kb || "-"}
                       </span>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-800">{reg.faskes || "-"}</div>
-                      <div className="text-xs text-gray-500 mt-1">{reg.tanggal_pelayanan || "-"}</div>
+                      <div className="text-xs text-gray-500 mt-1">{reg.tanggal_pelayanan ? new Date(reg.tanggal_pelayanan).toLocaleDateString('id-ID') : "-"}</div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <select
